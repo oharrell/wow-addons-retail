@@ -1,0 +1,294 @@
+--[===[ File
+    This file is NOT to be included in the TOC file!
+    This is intended for IDE Intellisense.
+
+
+    This file is to remove errors and warnings thrown by the Intellisense tools used.
+    It declares variables and tables :
+    - That are not readily available to the IDE
+    - That are declared via indirection as the drop down lib is
+    - When Lua Intellisense parser is stricter than Lua is
+    - When Titan is checking for an addon the user may or may not have loaded
+    
+    Titan may contain IDE annotations. 
+    These are ---@<tag> to help the parser understand the intent of the code.
+
+    Some Titan files may contain lines beginning with
+---@diagnostic 
+    These remove LLS errors where
+    - Titan is handling Classic versions that use deprecated routines
+    - Possibly the WoW extension is out of date or the Blizz documentation is wrong
+
+    Note: the diagnostic could be by line, file, or workspace / project.
+    --]===]
+
+--[[ IDE
+    This file is NOT to be included in the TOC file!
+    This is intended to be used by IDE Intellisense feature.
+
+    These tools can make dev a lot easier. 
+    Visual Studio Code - https://code.visualstudio.com/
+    Other IDEs accept Lua Language Server, see if your prefered IDE will accept language servers.
+
+    - Lua Language Server (LLS) :
+    https://marketplace.visualstudio.com/items?itemName=sumneko.lua
+    or	https://github.com/LuaLS/lua-language-server
+
+    - WoW API - LLS extension :
+    https://marketplace.visualstudio.com/items?itemName=ketho.wow-api
+    or https://github.com/Ketho/vscode-wow-api
+
+    - WoW TOC can be useful :
+    - https://marketplace.visualstudio.com/items?itemName=stanzilla.vscode-wow-toc
+
+
+    And a tiny Python parser to pull these comments.
+
+    Notes: 
+    - The WoW API in both IDE plugins is geared to Retail.
+    - There is no option to automatically include 'Classic' deprecated routines.
+    - There are diagnostic annotations used to ignore some warnings. 
+    - Ignore warning annotations were limited as much as practical to 'this line' to point out usage of Classic routines.
+    - Files or folders for the IDE such as .vscode; Titan.code-workspace; and others are included in the TItan release.
+
+--]]
+
+-- Use Linux command below to get a rough line count of a Titan release.
+-- find . -wholename "*.tga" -prune -o -wholename "*.code*" -prune -o -wholename "*.blp" -prune -o -wholename "*/libs/*" -prune -o -wholename "*/Artwork/*" -prune -o -print | xargs wc -l
+
+-- Note: The IDE does not understand the frames and widgets relationship between XML and Lua. Declare UI objects defined in XML or Lua here.
+
+--====== Frames from Titan Template XML
+TitanPanelButtonTemplate = {}
+TitanPanelTextTemplate = {}
+TitanPanelIconTemplate = {}
+TitanPanelComboTemplate = {}
+TitanOptionsSliderTemplate = {}
+TitanPanelTooltip = {}
+TitanPanelBarButtonHiderTemplate = {}
+TitanPanelBarButton = {}
+Titan_Bar__Display_Template = {}
+
+--====== Frames from Titan XML
+TitanPanelTopAnchor = {}
+TitanPanelBottomAnchor = {}
+
+--====== Frames from Titan plugins created in XML or in Titan code
+TitanPanelAmmoButton = {}
+
+TitanRepairTooltip = {}
+
+TitanPanelLocationButton = {}
+TitanMapPlayerLocation = {}
+TitanMapCursorLocation = {}
+
+TitanPanelLootTypeFrame = {}
+TitanPanelLootTypeButton = {}
+TitanPanelLootTypeMainWindow = {}
+TitanPanelLootTypeFrameClearButton = {}
+TitanPanelLootTypeFrameAnnounceButton = {}
+TitanPanelLootTypeFrameNotRolledButton = {}
+TitanPanelLootTypeFrameRollButton = {}
+TitanPanelLootTypeFramePassButton = {}
+RollTrackerRollText = {}
+TitanPanelLootTypeFrameStatusText = {}
+TitanPanelLootTypeFrameHelperButton = {}
+TitanPanelLootTypeMainWindowTitle = {}
+
+TitanPanelPerfControlFrame = {}
+
+TitanPanelMasterVolumeControlSlider = {}
+TitanPanelAmbienceVolumeControlSlider = {}
+TitanPanelDialogVolumeControlSlider = {}
+TitanPanelSoundVolumeControlSlider = {}
+TitanPanelMusicVolumeControlSlider = {}
+
+TitanPanelXPButton = {}
+TitanPanelXPButtonIcon = {}
+
+--====== Libs that may exist or adjusting for libs
+-- Ace lib references
+AceLibrary = {}
+
+---@class AceAddon
+
+AceGUIWidgetLSMlists = {}
+
+AceHook = {}
+-- @param obj string | function The object or frame to unhook from
+-- @param method function The name of the method, function or script to unhook from.
+function AceHook:IsHooked(obj, method)
+    -- Ace does a parameter shift if obj is a string
+    -- But the param does not reflect this...
+end
+
+--====== WoW localized globals
+-- Should be handled by the WoW extension
+ACCOUNT_QUEST_LABEL = "" -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up soon
+ACCOUNT_BANK_PANEL_TITLE = "" -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up soon
+LABEL_NOTE = ""
+
+--====== WoW defined frames
+PetActionBarFrame = {}
+StanceBarFrame = {}
+PossessBarFrame = {}
+MinimapBorderTop = {}
+MinimapZoneTextButton = {}
+MiniMapWorldMapButton = {}
+VideoOptionsFrame = {}
+
+---@class FrameSizeBorder
+
+--====== WoW tables or routines
+UIPARENT_MANAGED_FRAME_POSITIONS = {}
+FCF_UpdateDockPosition = {}
+TargetFrame_Update = {}
+VideoOptionsFrameOkay_OnClick = {}
+
+C_Bank = {} -- 11.0.0 New Warbank - Hopefully WoW API extension will catch up soon
+
+
+--====== Convince IDE we know what we are doing
+-- Lua allows table updates but the IDE complains about 'injecting' a field it does not know about.
+
+
+--====== Adding a function or variable to a frame in this case.
+---@class UIParent WoW frame
+---@field GetScale function WoW region routine
+
+---@class Frame frame for a Titan template
+---@field showTimer number time to close in seconds
+---@field isCounting number | nil 1 or nil
+---@field parent table | nil Anchor tooltip
+
+--====== Plugin frames from Template XML
+-- These fields are used by Titan to store plugin info.
+-- This can avoid 'convoluted' lookups and be faster.
+--
+---@class Button Plugin frame from a Titan template
+---@field TitanLDBSetOwnerPosition function Anchor tooltip
+---@field TitanLDBSetTooltip function Fill tooltip
+---@field TitanLDBHandleScripts function Set frame scripts
+---@field TitanLDBTextUpdate function Update plugin text
+---@field TitanLDBIconUpdate function Update plugin icon
+---@field TitanLDBCreateObject function Create plugin
+---@field TitanCreatedBy string Only LDB ATM
+---@field TitanType string Not used ATM
+---@field TitanName string Used for LDB name / id
+---@field TitanAction string Not used ATM
+---@field bar_name string Used by auto hide built-in
+---@field registry table Any Titan plugin (built-in; third party; or LDB)
+---@field tooltipText string Titan text for the tool tip
+---@field RequestTimePlayed table Override default - XP
+---@field TIME_PLAYED_MSG table Override default - XP
+---@field short_name string Placeholder for short bar name
+---@field RegisterForClicks function Variable params missed by VS Code plugin
+
+--====== New Jan 2026 Implement wrappers for new Menu scheme
+---@class Titan_Menu Wrappers for menu scheme
+---@field AddDivider function Add an actual line into menu
+---@field AddSpacer function Add a blank line into menu
+---@field SetAtribEnabled function Set whether this widget is enabled (old info.isEnabled)
+---@field AddButton function Add a button, used for submemu titles
+---@field AddSelector function TitanAdd simple radio button
+---@field AddSelectorExclusiveList function Add a list of radio that use different saved vars options
+---@field AddSelectorList function Add a list of radio that use same saved vars options
+---@field AddCommand function Add menu button that is a command (old info.func)
+---@field AddSelectorCommand function Add radio with extra steps (code in a function)
+---@field AddContextMenu function Titan ONLY to create root menu
+
+--====== New Dec 2025 Collect info on each toon for Profile Config
+-- Also used by plugins such as Gold and Post
+---@class CharInfo
+---@field name string
+---@field server string
+---@field class string
+---@field className string
+---@field classId number
+---@field faction string
+---@field factionName string
+---@field level number
+---@field levelText string
+---@field race string
+---@field raceName string
+---@field raceId number
+---@field gold_toon number
+---@field itemLevelAve number
+---@field itemLevelEquipped number
+---@field itemLevelPvp number
+---@field played_start number
+---@field played_total number
+---@field played_this_level number
+---@field unit_xp number
+---@field unit_xp_max number
+
+--====== Profile output from Utils
+---@class Get_Profile_Result
+---@field ptype string Type of profile being used
+---@field pname string Name of profile being used
+---@field cname string Name of profile being used color coded
+---@field glob string Value of global profile
+---@field sync string Value of sync profile
+
+--====== Ace Drop down menu
+L_UIDROPDOWNMENU_MENU_LEVEL = 1
+L_UIDROPDOWNMENU_MENU_VALUE = 1
+
+--====== WoW Drop down menu
+UIDROPDOWNMENU_MENU_VALUE = 1
+
+---@class LibUIDropDownMenu
+---@field UIDropDownMenu_InitializeHelper function
+---@field Create_UIDropDownMenu function
+---@field UIDropDownMenu_Initialize function
+---@field UIDropDownMenu_SetInitializeFunction function
+---@field UIDropDownMenu_SetDisplayMode function
+---@field UIDropDownMenu_RefreshDropDownSize function
+---@field UIDropDownMenu_StartCounting function
+---@field UIDropDownMenu_StopCounting function
+---@field UIDropDownMenu_CreateInfo function
+---@field UIDropDownMenu_CreateFrames function
+---@field UIDropDownMenu_AddSeparator function
+---@field UIDropDownMenu_AddSpace function
+---@field UIDropDownMenu_AddButton function
+---@field UIDropDownMenu_CheckAddCustomFrame function
+---@field UIDropDownMenu_RegisterCustomFrame function
+---@field UIDropDownMenu_GetMaxButtonWidth function
+---@field UIDropDownMenu_GetButtonWidth function
+---@field UIDropDownMenu_Refresh function
+---@field UIDropDownMenu_RefreshAll function
+---@field UIDropDownMenu_SetIconImage function
+---@field UIDropDownMenu_SetSelectedName function
+---@field UIDropDownMenu_SetSelectedValue function
+---@field UIDropDownMenu_GetSelectedName function
+---@field UIDropDownMenu_GetSelectedID function
+---@field UIDropDownMenu_SetSelectedID function
+---@field UIDropDownMenu_GetSelectedValue function
+---@field HideDropDownMenu function
+---@field ToggleDropDownMenu function
+---@field CloseDropDownMenus function
+---@field UIDropDownMenu_SetWidth function
+---@field UIDropDownMenu_SetButtonWidth function
+---@field UIDropDownMenu_SetText function
+---@field UIDropDownMenu_GetText function
+---@field UIDropDownMenu_ClearAll function
+---@field UIDropDownMenu_JustifyText function
+---@field UIDropDownMenu_SetAnchor function
+---@field UIDropDownMenu_GetCurrentDropDown function
+---@field UIDropDownMenuButton_GetChecked function
+---@field UIDropDownMenuButton_GetName function
+---@field UIDropDownMenuButton_OpenColorPicker function
+---@field UIDropDownMenu_DisableButton function
+---@field UIDropDownMenu_EnableButton function
+---@field UIDropDownMenu_SetButtonText function
+---@field UIDropDownMenu_SetButtonNotClickable function
+---@field UIDropDownMenu_SetButtonClickable function
+---@field UIDropDownMenu_DisableDropDown function
+---@field UIDropDownMenu_EnableDropDown function
+---@field UIDropDownMenu_IsEnabled function
+---@field UIDropDownMenu_GetValue function
+---@field OpenColorPicker function
+---@field ColorPicker_GetPreviousValues function
+
+
+--====== API routines

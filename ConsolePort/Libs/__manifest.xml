@@ -1,0 +1,4 @@
+<Ui>	
+	<Include file="External\__manifest.xml"/>
+	<Include file="Local\__manifest.xml"/>
+</Ui>

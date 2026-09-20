@@ -1,0 +1,6 @@
+<Ui>
+	<!-- Models -->
+	<Include file="Data\__manifest.xml"/>
+	<Include file="Gamepad\__manifest.xml"/>
+	<Include file="Game\__manifest.xml"/>
+</Ui>

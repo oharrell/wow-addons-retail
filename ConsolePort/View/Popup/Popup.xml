@@ -1,0 +1,103 @@
+<Ui>
+	<GameTooltip frameStrata="MEDIUM" name="ConsolePortPopupMenuTooltip" parentKey="Tooltip" inherits="GameTooltipTemplate"/>
+
+	<IndexButton name="CPPopupActionSlotTemplate" virtual="true">
+		<Size x="38" y="38"/>
+		<KeyValues>
+			<KeyValue key="thumbPosition" value="BOTTOM" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="Icon" file="Interface\AddOns\ConsolePort\Assets\Textures\Button\EmptyIcon">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0.1" bottom="0.9"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<FontString parentKey="Slug" inherits="CPSmallFont" justifyH="RIGHT" maxLines="3">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</IndexButton>
+
+	<!-- Container item menu -->
+	<Frame name="ConsolePortItemMenu"
+		clampedToScreen="true"
+		movable="true"
+		enableMouse="true"
+		hidden="true"
+		parent="UIParent"
+		inherits="CPPopupPortraitFrameTemplate"
+		frameStrata="DIALOG"
+		mixin="ItemLocationMixin, ItemMixin">
+		<Size x="440" y="130"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="nameOffsetY" value="-16" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnMouseDown method="StartMoving"/>
+			<OnMouseUp method="StopMovingOrSizing"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Spell menu -->
+	<Frame name="ConsolePortSpellMenu"
+		clampedToScreen="true"
+		movable="true"
+		enableMouse="true"
+		hidden="true"
+		parent="UIParent"
+		inherits="CPPopupPortraitFrameTemplate"
+		frameStrata="DIALOG"
+		mixin="SpellMixin">
+		<Size x="440" y="130"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="nameOffsetY" value="-16" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnMouseDown method="StartMoving"/>
+			<OnMouseUp method="StopMovingOrSizing"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="BindingHeader" inherits="CPPopupHeaderTemplate"/>
+		</Frames>
+	</Frame>
+
+	<!-- Unit menu -->
+	<Frame name="ConsolePortUnitMenu"
+		clampedToScreen="true"
+		movable="true"
+		enableMouse="true"
+		hidden="true"
+		parent="UIParent"
+		inherits="CPPopupPortraitFrameTemplate"
+		frameStrata="DIALOG">
+		<Size x="440" y="130"/>
+		<Anchors>
+			<Anchor point="CENTER" x="400" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnMouseDown method="StartMoving"/>
+			<OnMouseUp method="StopMovingOrSizing"/>
+		</Scripts>
+	</Frame>
+
+	<Script file="Shared\Tooltip.lua"/>
+	<Script file="Shared\Button.lua"/>
+	<Script file="ItemMenu.lua"/>
+	<Script file="SpellMenu.lua"/>
+	<Script file="UnitMenu.lua"/>
+</Ui>

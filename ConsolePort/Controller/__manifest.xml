@@ -1,0 +1,16 @@
+<Ui>
+	<Script file="Securenav.lua"/>
+	<Script file="UnitMenu.lua"/>
+	<Script file="Interact.lua"/>
+	<Script file="Input.lua"/>
+	<Script file="Pager.lua"/>
+	<Script file="Radial.lua"/>
+	<Script file="Mouse.lua"/>
+	<Script file="Movement.lua"/>
+	<Script file="Targeting.lua"/>
+	<Script file="Slash.lua"/>
+	<Script file="Bindings.lua"/>
+	<Script file="Convenience.lua"/>
+	<Script file="LED.lua"/>
+	<Script file="ExtraActions.lua"/>
+</Ui>

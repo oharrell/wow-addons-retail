@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <Frame
+    name="CollectionatorConfigBasicOptionsFrame"
+    mixin="CollectionatorConfigBasicOptionsFrameMixin"
+    hidden="true"
+    >
+
+    <Scripts>
+      <OnLoad method="OnLoad"/>
+      <OnShow method="OnShow"/>
+      <OnHide method="Save"/>
+    </Scripts>
+
+    <Frames>
+      <Frame inherits="AuctionatorConfigurationTitleFrame" parentKey="TitleArea">
+        <KeyValues>
+          <KeyValue key="titleText" value="AUCTIONATOR_L_CONFIG_BASIC_OPTIONS_CATEGORY" type="global" />
+          <KeyValue key="subTitleText" value="COLLECTIONATOR_L_CONFIG_BASIC_OPTIONS_TEXT" type="global"/>
+        </KeyValues>
+      </Frame>
+
+      <Frame inherits="AuctionatorConfigurationHeadingFrame" parentKey="ScanModesHeading">
+        <KeyValues>
+          <KeyValue key="headingText" value="COLLECTIONATOR_L_SCAN_MODES" type="global"/>
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.TitleArea" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Frame>
+
+      <Frame inherits="AuctionatorConfigurationCheckbox" parentKey="Summary">
+        <KeyValues>
+          <KeyValue key="labelText" value="COLLECTIONATOR_L_CONFIG_SUMMARY_MODE_TAB" type="global" />
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.ScanModesHeading" relativePoint="BOTTOMLEFT" />
+        </Anchors>
+      </Frame>
+
+      <Frame inherits="AuctionatorConfigurationCheckbox" parentKey="Replicate">
+        <KeyValues>
+          <KeyValue key="labelText" value="COLLECTIONATOR_L_CONFIG_REPLICATE_MODE_TAB" type="global" />
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.Summary" relativePoint="BOTTOMLEFT" />
+        </Anchors>
+      </Frame>
+
+      <Frame inherits="AuctionatorConfigurationHeadingFrame" parentKey="RecipesHeading">
+        <KeyValues>
+          <KeyValue key="headingText" value="COLLECTIONATOR_L_RECIPES_BUTTON" type="global"/>
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.Replicate" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </Frame>
+
+      <Frame inherits="AuctionatorConfigurationCheckbox" parentKey="RecipeCaching">
+        <KeyValues>
+          <KeyValue key="labelText" value="COLLECTIONATOR_L_CONFIG_RECIPE_CACHING" type="global" />
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.RecipesHeading" relativePoint="BOTTOMLEFT" />
+        </Anchors>
+      </Frame>
+
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="COLLECTIONATOR_L_RESET_RECIPE_CACHE" parentKey="UnhideAll">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.RecipeCaching" relativePoint="BOTTOMLEFT" x="23"/>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            self:GetParent():ResetRecipeCache()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Frame inherits="AuctionatorConfigurationHeadingFrame" parentKey="PurchaseWatchHeader">
+        <KeyValues>
+          <KeyValue key="headingText" value="COLLECTIONATOR_L_CONFIG_PURCHASE_TRACKING_HEADER" type="global"/>
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.UnhideAll" relativePoint="BOTTOMLEFT" x="-23" y="-10"/>
+        </Anchors>
+      </Frame>
+
+      <Frame inherits="AuctionatorConfigurationCheckbox" parentKey="PurchaseWatch">
+        <KeyValues>
+          <KeyValue key="labelText" value="COLLECTIONATOR_L_CONFIG_PURCHASE_TRACKING" type="global" />
+        </KeyValues>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.PurchaseWatchHeader" relativePoint="BOTTOMLEFT" />
+        </Anchors>
+      </Frame>
+
+      <Button inherits="UIPanelDynamicResizeButtonTemplate" text="COLLECTIONATOR_L_RESET_PURCHASE_WATCH" parentKey="UnhideAll">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeKey="$parent.PurchaseWatch" relativePoint="BOTTOMLEFT" x="23"/>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            self:GetParent():ResetPurchaseWatch()
+          </OnClick>
+        </Scripts>
+      </Button>
+   </Frames>
+  </Frame>
+</Ui>

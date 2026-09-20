@@ -1,0 +1,1348 @@
+--[===[ File
+Contains routines defined in TitanTemplate.xml.
+
+Contains the routines to control a Titan template frame whether Titan bar or plugin.
+--]===]
+
+--[===[ Var API TitanPanelTemplate overview
+Creates the following frames:
+- TitanPanelBarButton : Main Titan frame handling events
+- TitanPanelTooltip : Inherits from GameTooltipTemplate
+
+Contains the routines to control a Titan template frame.
+These could be:
+- A Titan bar (full or short)
+- A Titan plugin (built-in, thrid party, or LDB)
+
+The Titan templates are defined in .xml.
+There appears to be no other way to make frame templates - virtual="true".
+See TitanPanelButtonTemplate.xml also for more detail.
+
+TitanTemplate (Lua and XML) contain the basics for Titan plugin frames.
+Titan templates contain elements used by Titan.
+
+A Titan plugin is a frame created using one of the button types in TitanPanelButtonTemplate.xml.
+The available plugin types are:
+- TitanPanelTextTemplate - * A frame that only displays text ("$parentText")
+- TitanPanelIconTemplate - * A frame that only displays an icon ("$parentIcon")
+- TitanPanelComboTemplate - * A frame that displays an icon then text ("$parentIcon"  "$parentText")
+- TitanOptionsSliderTemplate - A frame that contains a basic vertical slider control. See TitanVolume for an example.
+
+* Templates inherit TitanPanelButtonTemplate for common elements.
+
+Most plugins use the combo template.
+
+TitanPanelButtonTemplate contains:
+- a frame to handle a menu invoked by a right mouse click ("$parentRightClickMenu")
+- default event handlers for
+			<OnLoad>
+				TitanPanelButton_OnLoad(self);
+			</OnLoad>
+			<OnShow>
+				TitanPanelButton_OnShow(self);
+			</OnShow>
+			<OnClick>
+				TitanPanelButton_OnClick(self, button);
+			</OnClick>
+			<OnEnter>
+				TitanPanelButton_OnEnter(self);
+			</OnEnter>
+			<OnLeave>
+				TitanPanelButton_OnLeave(self);
+			</OnLeave>
+If these events are overridden then the default routine needs to be included!
+
+
+NOTE: TitanPanelChildButtonTemplate - Removed 2024 Jun
+--]===]
+
+-- Globals
+
+-- Constants
+local TITAN_PANEL_LABEL_SEPARATOR = "  "
+local TITAN_PANEL_BUTTON_WIDTH_CHANGE_TOLERANCE = 10;
+local TITAN_PANEL_BUTTON_TYPE_TEXT = 1;
+local TITAN_PANEL_BUTTON_TYPE_ICON = 2;
+local TITAN_PANEL_BUTTON_TYPE_COMBO = 3;
+local TITAN_PANEL_BUTTON_TYPE_CUSTOM = 4;
+local pluginOnEnter = nil;
+
+-- Used for drag and drop, assuming one can only drag one plugin :)
+local TITAN_PANEL_MOVE_ADDON = "";
+--local TITAN_PANEL_DROPOFF_ADDON = "";
+local FROM_BAR_SHORT = ""
+
+-- Library instances
+local LibQTip = nil
+local _G = getfenv(0);
+local InCombatLockdown = _G.InCombatLockdown
+local media = LibStub("LibSharedMedia-3.0")
+
+--- Set Titan_Debug.titan.tool_tips to output debug
+--==========================
+
+--[[ local
+NAME: TitanPanel_SetScale
+DESC: Set the scale of each plugin and each Titan bar.
+VAR:  None
+OUT:  None
+--]]
+--[[
+function TitanPanel_SetScale()
+	local scale = TitanPanelGetVar("Scale");
+
+	-- Set all the Titan bars
+	for idx, v in pairs(TitanBarData) do
+		_G[idx]:SetScale(scale)
+	end
+	-- Set all the registered plugins
+	for index, value in pairs(TitanPlugins) do
+		if index then
+			TitanUtils_GetButton(index):SetScale(scale);
+		end
+	end
+end
+--]]
+
+local function GetTooltipLines(tooltip)
+  local textLines = {}
+  local regions = {tooltip:GetRegions()}
+  local cnt = 1
+  for _, r in ipairs(regions) do
+    if r:IsObjectType("FontString") then
+      print(cnt..": "..tostring(r:GetText()))
+	  cnt = cnt + 1
+    end
+  end
+  return textLines
+end
+
+---local Helper to add a line of tooltip text to the tooltip.
+---@param text string To add
+---@param frame table Tooltip frame
+--- Append a "\n" to the end if there is not one already there
+local function TitanTooltip_AddTooltipText(text, frame)
+	if (text) then
+		-- Append a "\n" to the end
+		if (string.sub(text, -1, -1) ~= "\n") then
+			text = text .. "\n";
+		end
+
+		-- See if the string is intended for a double column
+		for text1, text2 in string.gmatch(text, "([^\t\n]*)\t?([^\t\n]*)\n") do
+			if (text2 ~= "") then
+				-- Add as double wide
+				frame:AddDoubleLine(text1, text2);
+			elseif (text1 ~= "") then
+				-- Add single column line
+				frame:AddLine(text1);
+			else
+				-- Assume a blank line
+				frame:AddLine("\n");
+			end
+		end
+	else
+		-- No text to display
+	end
+end
+
+---local Helper to set both the parent and the position of Tooltip for the plugin tooltip.
+---@param parent table Reference to the frame to attach the tooltip to
+---@param anchorPoint string Tooltip anchor location (side or corner) to use
+---@param relativeToFrame string name name of the frame, usually the plugin), to attach the tooltip to
+---@param relativePoint string Parent anchor location (side or corner) to use
+---@param xOffset number X offset
+---@param yOffset number Y offset
+---@param frame table Tooltip frame
+---@param custom boolean If custom / not tooltip frame
+local function SetOwnerPosition(parent, anchorPoint, relativeToFrame, relativePoint, xOffset, yOffset, frame, custom)
+	-- Changes for WoW 9.1.5 Removed the background template from the Tooltip
+	-- Making changes to it difficult and possibly changing the tooltip globally.
+
+	if custom then
+		-- do NOT set owner - it clears the contents!
+	else
+		frame:SetOwner(parent, "ANCHOR_NONE")
+	end
+
+	frame:SetPoint(anchorPoint, relativeToFrame, relativePoint, xOffset, yOffset);
+
+	-- Set font size for the tooltip; only on show
+	if TitanPanelGetVar("DisableTooltipFont") then
+		-- use UI scale
+	else
+		--[[
+		if TitanTooltipScaleSet < 1 then
+			TitanTooltipOrigScale = frame:GetScale();
+			TitanTooltipScaleSet = TitanTooltipScaleSet + 1;
+		end
+		--]]
+		frame:SetScale(TitanPanelGetVar("TooltipFont"));
+	end
+
+	local dbg_msg = "_SetOwner _pos"
+		.. " '" .. tostring(frame:GetName()) .. "'"
+		.. " " .. tostring(frame:IsShown()) .. ""
+		.. " @ '" .. tostring(relativeToFrame) .. "'"
+		.. " " .. tostring(_G[relativeToFrame]:IsShown()) .. ""
+	Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
+	dbg_msg = ">>_pos"
+		.. " " .. tostring(anchorPoint) .. ""
+		.. " " .. tostring(relativePoint) .. ""
+		.. " w" .. tostring(format("%0.1f", frame:GetWidth())) .. ""
+		.. " h" .. tostring(format("%0.1f", frame:GetHeight())) .. ""
+	Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
+end
+
+---local Helper to set the screen position of the tooltip frame
+---@param self table Plugin frame
+---@param id string Plugin id name
+---@param frame table Tooltip frame to use
+---@param custom? boolean If custom / not tooltip frame
+local function SetPanelTooltip(self, id, frame, custom)
+	local is_custom = custom or false
+	local button = TitanUtils_GetButton(id)
+
+	if button then
+		-- Adjust the Y offset as needed
+		local top = self:GetTop()
+		local hgt = frame:GetHeight()
+		local lft = self:GetLeft()
+
+		local rel_y = top - hgt
+		local pt = ""
+		local rel_pt = ""
+		if rel_y > 0 then
+			pt = "TOP";
+			rel_pt = "BOTTOM";
+		else
+			-- too close to bottom of screen
+			pt = "BOTTOM";
+			rel_pt = "TOP";
+		end
+		local rel_x = lft + hgt
+		if (rel_x < GetScreenWidth()) then
+			-- menu will fit
+			pt = pt .. "LEFT";
+			rel_pt = rel_pt .. "LEFT";
+		else
+			pt = pt .. "RIGHT";
+			rel_pt = rel_pt .. "RIGHT";
+		end
+
+		SetOwnerPosition(button, pt, button:GetName(), rel_pt, 0, 0, frame, is_custom)
+	end
+end
+
+---Determine if the tooltip should be shown
+---@param self table Tooltip frame
+---@return boolean ok to show tooltip
+local function AllowTooltip(self)
+	local ok = false
+	local dbg_msg = "IsMenuOpen:"
+	-- ensure that the 'self' passed is a valid frame reference
+	if self:GetName() then
+		local menu_mgr = Menu.GetManager()
+
+		local id = self.registry_id
+		local controlFrame = TitanUtils_GetControlFrame(id);
+		local plugin = _G[self.plugin_frame_str]
+
+		-- Jan 2026 : Place all checks to NOT show tooltip here...
+		-- Checks in other places tooltips could show were causing visual oddities.
+		dbg_msg = dbg_msg .. "'" .. self:GetName() .. "'"
+		-- sanity checks
+		if (TitanPanelGetVar("HideTipsInCombat") and InCombatLockdown()) then
+			dbg_msg = dbg_msg .. " HideTipsInCombat"
+		elseif (menu_mgr and menu_mgr:IsAnyMenuOpen()) then -- Blizzard_Menu
+			dbg_msg = dbg_msg .. " IsAnyMenuOpen"
+		elseif (controlFrame and controlFrame:IsVisible()) then -- Titan custom menu widget
+			dbg_msg = dbg_msg .. " controlFrame"
+		elseif TitanPanelRightClickMenu_IsVisible() then  -- UIDropDownMenu
+			dbg_msg = dbg_msg .. " TitanPanelRightClickMenu_IsVisible"
+		elseif not TitanPanelGetVar("ToolTipsShown") then -- user does not want tooltips
+			dbg_msg = dbg_msg .. " not ToolTipsShown"
+		elseif plugin.isMoving then                       -- this plugin is moving
+			dbg_msg = dbg_msg .. " isMoving"
+			plugin:Hide()
+		elseif TITAN_PANEL_MOVING == 1 then -- another plugin is being moved
+			dbg_msg = dbg_msg .. " TITAN_PANEL_MOVING"
+		else
+			ok = true -- whew, we can actually show!
+		end
+	else
+		dbg_msg = dbg_msg .. " No frame"
+		-- Cannot even start
+	end
+
+	local mods = false --
+	local use_mod = TitanAllGetVar("UseTooltipModifer")
+	local use_alt = TitanAllGetVar("TooltipModiferAlt")
+	local use_ctrl = TitanAllGetVar("TooltipModiferCtrl")
+	local use_shift = TitanAllGetVar("TooltipModiferShift")
+
+	if use_mod then
+		if (use_alt and IsAltKeyDown())
+			or (use_ctrl and IsControlKeyDown())
+			or (use_shift and IsShiftKeyDown())
+		then
+			mods = true
+		end
+	else
+		mods = true
+	end
+
+	return (ok and mods)
+end
+
+---local Set the tooltip of the given Titan plugin.
+---@param self table Plugin frame
+local function TitanPanelButton_SetTooltip(self)
+	local dbg_msg = "_SetTooltip"
+	local ok = false
+	local frame = TitanPanelTooltip --GameTooltip
+	local id = self.registry.id
+
+	frame.registry_id = id -- for use in other routines
+	frame.plugin_frame = self
+	frame.plugin_frame_str = self:GetName()
+
+	ok = AllowTooltip(frame)
+	if ok then
+		local call_ok = nil
+		local tmp_txt = ""
+
+		self.tooltipCustomFunction = nil;
+		self.titan_tt_func = ""
+		self.titan_tt_err = ""
+
+		dbg_msg = dbg_msg .." "..tostring(id)..""
+		if (id and TitanUtils_IsPluginRegistered(id)) then
+			local plugin = TitanUtils_GetPlugin(id)
+			-- 2024 Jun Add id and frame name to 'pass' to tooltip routine.
+			-- A compromise given that this mechanism is used by nearly all plugins.
+			-- Used by Titan auto hide to better determine which bar the 'pin' / icon is on.
+			self.plugin_id = id
+			self.plugin_frame = TitanUtils_ButtonName(id)
+
+			-- Tooltip method order : 
+			-- 1) LDB object OnEnter / OnLeave OVERRIDES!!! This routine will not be called.
+			-- 2) tooltipDisplayFrame
+			-- 3) tooltipTemplateFunction 
+			-- 4) tooltipCustomFunction
+			-- 5) tooltipTextFunction
+			if (plugin and plugin.tooltipDisplayFrame) then
+				-- 2026 Mar : Added from LDB .tooltip to take advantage of Titan processing.
+				-- Plugin is expected to handle its frame!
+				-- Titan will position and show only!
+				-- Plugin must handle any timeout and any other features.
+
+				-- Hide the Titan Tooltip in case it is open.
+				frame:Hide()
+
+				dbg_msg = dbg_msg .. " | tooltipDisplayFrame"
+					.." '"..tostring(plugin.tooltipDisplayFrame:GetName()).."'"
+				SetPanelTooltip(self, id, plugin.tooltipDisplayFrame, true)
+
+				plugin.tooltipDisplayFrame:Show() -- now show it
+			elseif (plugin and plugin.tooltipTemplateFunction) then
+				-- 2026 Mar Added to pass a tooltip frame to a plugin as an explicit agreement.
+				-- Combines the Titan tooltip and LDB OnTooltipShow
+				-- This acts as Blizz GameTooltip so plugin can 'add line' etc.
+
+				-- Hide the Titan Tooltip in case it is open.
+				frame:Hide()
+				frame:ClearLines() -- Hand off a blank tooltip
+				SetPanelTooltip(self, id, frame)
+
+				-- The plugin is in full control of contents; pass it the tooltip frame to fill
+				self.tooltipTemplateFunction = plugin.tooltipTemplateFunction;
+				dbg_msg = dbg_msg .. " | tooltipTemplateFunction"
+				call_ok, tmp_txt = pcall(self.tooltipTemplateFunction, frame)
+				if call_ok then
+					-- all is good
+					dbg_msg = dbg_msg .. " | ok"
+				else
+					dbg_msg = dbg_msg .. " | Err: " .. tmp_txt
+				end
+				frame:Show(); -- now show it
+			elseif (plugin and plugin.tooltipCustomFunction) then
+				-- Hide the Titan Tooltip in case it is open.
+				frame:Hide()
+				-- 2026 Jan Switching to a Titan controlled frame made us realize
+				-- changing GameTooltip for custom tooltips creates a hybrid mess...
+
+				-- This should be treated as deprecated as of 2026 Mar.
+				-- It is left so older plugins will work - but they can error as of Midnight (12.0.0)
+				-- Use tooltipTemplateFunction instead!
+				local custom_f = GameTooltip
+				SetPanelTooltip(self, id, custom_f);
+
+				-- Fill the tooltip
+				self.tooltipCustomFunction = plugin.tooltipCustomFunction;
+				dbg_msg = dbg_msg .. " | custom"
+				call_ok, tmp_txt = pcall(self.tooltipCustomFunction, self)
+				if call_ok then
+					-- all is good
+					dbg_msg = dbg_msg .. " | ok"
+				else
+					dbg_msg = dbg_msg .. " | Err: " .. tmp_txt
+				end
+
+				custom_f:Show(); -- now show it
+			elseif (plugin) then
+				-- 2026 Jan No longer require registry.tooltipTitle allowing dev to set their own
+				-- From Lingkan dev of Titan Rep Continued
+				local tooltipTextFunc = {} ---@type function
+				local tt_func = plugin.tooltipTextFunction
+				local func_ok = true
+
+				if type(tt_func) == 'string' then
+					-- Function MUST be in global namespace
+					tooltipTextFunc = _G[tt_func]
+					dbg_msg = dbg_msg .. " | string"
+				elseif type(tt_func) == 'function' then
+					-- Can be global or local to the plugin
+					tooltipTextFunc = tt_func
+					dbg_msg = dbg_msg .. " | function"
+				else
+					-- silently leave...
+					dbg_msg = dbg_msg .. " | none found"
+					func_ok = false
+				end
+
+				if func_ok then
+					-- Hide the Tooltip while being updated, to avoid race conditions.
+					frame:Hide()
+					GameTooltip:Hide() -- Also hide in case. Cannot hide completly custom tool tips
+					-- Prep the tooltip frame
+					SetPanelTooltip(self, id, frame);
+					if plugin.tooltipTitle then
+						self.tooltipTitle = plugin.tooltipTitle;
+						frame:SetText(self.tooltipTitle,
+							HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+					else
+						-- assume dev is doing their own thing
+					end
+					call_ok, tmp_txt = pcall(tooltipTextFunc, self)
+
+					-- Fill the tooltip
+					-- Any error will be in the tooltip
+					self.tooltipText = tmp_txt
+					if (self.tooltipText) then
+						TitanTooltip_AddTooltipText(self.tooltipText, frame)
+						dbg_msg = dbg_msg .. " | ok"
+					else
+						dbg_msg = dbg_msg .. " | No text"
+					end
+
+					frame:Show() -- now show it
+				end
+			else
+				-- no recognized method to create tooltip
+				dbg_msg = "No recognized tooltip method [.tooltipCustomFunction "
+					.."then tooltipTextFunction (with .tooltipTitle, if set)]"
+			end
+		end
+	else
+		-- no need to waste cycles
+	end
+
+	Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
+end
+
+---local Is the given Titan plugin template type text?
+---@param id string Plugin id name
+---@return boolean IsText
+local function TitanPanelButton_IsText(id)
+	if (TitanPanelButton_GetType(id) == TITAN_PANEL_BUTTON_TYPE_TEXT) then
+		return true
+	else
+		return false
+	end
+end
+
+---local Is the given Titan plugin of type combo?
+---@param id string Plugin id name
+---@return boolean IsCombo
+local function TitanPanelButton_IsCombo(id)
+	if (TitanPanelButton_GetType(id) == TITAN_PANEL_BUTTON_TYPE_COMBO) then
+		return true
+	else
+		return false
+	end
+end
+
+---Titan Is the given Titan plugin of type icon?
+---@param id string Plugin id name
+---@return boolean is_icon
+function TitanPanelButton_IsIcon(id)
+	local res = false
+	if (TitanPanelButton_GetType(id) == TITAN_PANEL_BUTTON_TYPE_ICON) then
+		res = true
+	else
+		res = false
+	end
+
+	return res
+end
+
+---local Handle the OnDragStart event of the given Titan plugin.
+---@param self table Plugin frame
+--- Do nothing if the user has locked plugins or if in combat.
+--- Set the .isMoving of the plugin (frame) so other routine can check it.
+--- Set TITAN_PANEL_MOVING so any Titan routine will know a 'drag & drop' is in progress.
+--- Set TITAN_PANEL_MOVE_ADDON so sanity checks can be done on the 'drop'.
+local function TitanPanelButton_OnDragStart(self)
+	-- Due to API change in 11.2.0, :ClearAllPoints immediately invalidates the rect...
+	-- Need to change order of events between drag start and stop:
+	-- - Remove but not Hide() the plugin - seems Hide() triggers OnDragStop without release of mouse button...
+	-- - Make ALL 'do not drag' checks BEFORE remove!!
+	--
+	-- Dropped Ace Dewdrop-2.0 lib support as of 2025 Sep; last updated 2008 Sep
+	-- Dropped Ace Tablet-2.0 lib support as of 2025 Sep; last updated 2009 Jan (marked as abandoned)
+
+	if TitanPanelGetVar("LockButtons") or InCombatLockdown() then
+		return -- not requested or not allowed
+	else
+		-- Proceed
+	end
+
+	local frname = self
+	local frstr = self:GetName()
+	local plugin_id = TitanUtils_GetButtonID(frstr)
+	local str = ""
+	str = "_OnDragStart start "
+		.. " " .. tostring(plugin_id) .. ""
+	--		.." from "..tostring(FROM_BAR_SHORT)..""
+	Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+
+
+	-- Tell Titan that a drag & drop is in process
+	TITAN_PANEL_MOVING = 1;
+	-- Start the drag
+	frname:StartMoving();
+	frname.isMoving = true;
+
+	-- Close any tooltips and control frames
+	TitanUtils_CloseAllControlFrames();
+	TitanPanelRightClickMenu_Close();
+	TitanPanelTooltip:Hide();
+
+	-- LibQTip-1.0 support code
+	LibQTip = LibStub("LibQTip-1.0", true)
+	if LibQTip then
+		for key, tip in LibQTip:IterateTooltips() do
+			if tip then
+				local _, relativeTo = tip:GetPoint()
+				if relativeTo and relativeTo:GetName() == frstr then
+					tip:Hide()
+					break
+				end
+			end
+		end
+	end
+	-- /LibQTip-1.0 support code
+
+	FROM_BAR_SHORT = TitanUtils_GetWhichBar(plugin_id) -- short name
+	str = "_OnDragStart moving"
+		.. " " .. tostring(plugin_id) .. ""
+		.. " from " .. tostring(FROM_BAR_SHORT) .. ""
+	Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+	-- Clear the plugin placement so we only move the intended plugin
+	TitanPanel_RemoveButton(plugin_id, false)
+	frname:Show() -- 'remove' hid the plugin
+
+	-- Hold the plugin id so we can do checks on the drop
+	TITAN_PANEL_MOVE_ADDON = plugin_id
+
+	-- Store the OnEnter handler so the tooltip does not show - or other oddities
+	pluginOnEnter = self:GetScript("OnEnter")
+	self:SetScript("OnEnter", nil)
+end
+
+---local Handle the OnDragStop event of the given Titan plugin.
+---@param self table Plugin frame
+--- Clear the .isMoving of the plugin (frame).
+--- Clear TITAN_PANEL_MOVING.
+--- Clear TITAN_PANEL_MOVE_ADDON.
+local function TitanPanelButton_OnDragStop(self)
+	-- The plugin is under the cursor so we MUST place the plugin somewhere!
+	-- We cannot just return.
+	-- Also means we can no longer swap plugins.
+	-- For now, we will drop the plugin on the bar under the cursor;
+	-- placing the plugin 'right' if set for that plugin
+
+	local frname = self
+	local frstr = self:GetName()
+	local plugin_id = TitanUtils_GetButtonID(frstr)
+
+	local str = ""
+	str = "_OnDragStop start "
+		.. " " .. tostring(plugin_id) .. ""
+	Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+
+	if TITAN_PANEL_MOVING == 1 then
+		frname:StopMovingOrSizing();
+		frname.isMoving = false;
+		TITAN_PANEL_MOVING = 0;
+
+		local bar
+		local tbar = "" -- bar short name
+		local fbar = TitanGetVar(plugin_id, "ForceBar")
+
+		str = "_OnDragStop "
+			.. " " .. tostring(plugin_id) .. ""
+		if fbar == nil
+			or fbar == false then
+			-- Find which bar it was dropped on
+			for idx, v in pairs(TitanBarData) do
+				bar = idx
+				if (bar and _G[bar]:IsMouseOver()) then
+					tbar = TitanBarData[bar].name
+				end
+			end
+			if tbar == "" then
+				-- not sure what the user did...
+				-- Likely released on UI so put back on the bar it came from
+				str = str .. " back to"
+				tbar = FROM_BAR_SHORT
+			else
+				str = str .. " onto"
+			end
+		else
+			str = str .. " force to"
+			tbar = fbar -- put it back; allows user to shift it
+		end
+
+		str = str .. " " .. tostring(tbar) .. ""
+		Titan_Debug.Out('titan', 'plugin_drag_drop', str)
+		TitanUtils_AddButtonOnBar(tbar, TITAN_PANEL_MOVE_ADDON)
+
+		-- The plugin was added a bar so clean up.
+		TITAN_PANEL_MOVE_ADDON = "";
+		if pluginOnEnter then
+			-- Restore the OnEnter script handler
+			self:SetScript("OnEnter", pluginOnEnter)
+		else
+			-- No OnEnter was found at drag start
+		end
+		pluginOnEnter = nil;
+	end
+end
+
+---API Set the color of the tooltip text to normal (white) with the value in green.
+---@param text string Label to show
+---@param value any Value to show; something tostring() can handle
+---@return string str Formatted text and value
+--- self.tooltipText = TitanOptionSlider_TooltipText("Addons", TitanGetVar(TITAN_PERFORMANCE_ID, "NumOfAddons"));
+function TitanOptionSlider_TooltipText(text, value)
+	return tostring(text) .. " " .. GREEN_FONT_COLOR_CODE .. tostring(value) .. FONT_COLOR_CODE_CLOSE;
+end
+
+---API Handle the OnLoad event of the requested Titan plugin. Ensure the plugin is set to be registered.
+---@param self table Plugin frame
+--- This is called from the Titan plugin frame in the OnLoad event - usually as the frame is created in the Titan template.
+function TitanPanelButton_OnLoad(self)
+	-- Used by plugins
+	--[[
+--- This is called from the Titan plugin frame in the OnLoad event - usually as the frame is created in the Titan template.
+--- This starts the plugin registration process. See TitanUtils for more details on plugin registration.
+--- The plugin registration is a two step process because not all addons create Titan plugins in the frame create.
+--- The Titan feature of converting LDB addons to Titan plugins is an example.
+--- If the plugin needs an OnLoad process it should call this routine after its own. I.E.
+--- TitanPanelLootTypeButton_OnLoad(self)
+--- TitanPanelButton_OnLoad(self)
+--]]
+	TitanUtils_PluginToRegister(self)
+end
+
+---API Handle the OnShow event of the requested Titan plugin.
+---@param self table Plugin frame
+function TitanPanelButton_OnShow(self)
+	local id = nil;
+	-- ensure that the 'self' passed is a valid frame reference
+	if self and self:GetName() then
+		id = TitanUtils_GetButtonID(self:GetName());
+	end
+	-- ensure that id is a valid Titan plugin
+	if (id) then
+		TitanPanelButton_UpdateButton(id, 1);
+	end
+end
+
+---API Handle the OnClick mouse event of the requested Titan plugin.
+---@param self table Plugin frame
+---@param button string Mouse button clicked
+--- Only the left and right mouse buttons are handled by Titan.
+--- Called from Titan templates unless overriden by plugin. If overridden the plugin should call this routine.
+function TitanPanelButton_OnClick(self, button)
+	local id
+	-- ensure that the 'self' passed is a valid frame reference
+	if self and self:GetName() then
+		id = TitanUtils_GetButtonID(self:GetName())
+	end
+
+	if id then
+		local controlFrame = TitanUtils_GetControlFrame(id);
+
+		if controlFrame and (button == "LeftButton") then
+			local isControlFrameShown;
+			if (not controlFrame) then
+				isControlFrameShown = false;
+			elseif (controlFrame:IsVisible()) then
+				isControlFrameShown = false;
+			else
+				isControlFrameShown = true;
+			end
+
+			TitanUtils_CloseAllControlFrames();
+			TitanPanelRightClickMenu_Close();
+
+			if (isControlFrameShown) then
+				-- Note: This uses anchor points to place the control frame relative to the plugin on the screen.
+				local parent = self:GetName() -- plugin with the control frame
+				local point = ""  -- point of the control frame
+				local rel_point = "" -- The middle - top or bottom edge - of the plugin to anchor to
+				--[[ Mar 2023 : removed reference to Titan bar reference
+					Instead use the relative position on the screen to show the control (plugin) frame properly.
+					NOTE: If Titan bars need a left click to show a control frame the offset
+					will need to be changed to use the cursor position like right click menu!!
+				--]]
+				local top = self:GetTop()
+				local hgt = controlFrame:GetHeight()
+				if (top - hgt) > 0 then
+					point = "TOP"
+					rel_point = "BOTTOM"
+				else -- below screen
+					point = "BOTTOM"
+					rel_point = "TOP"
+				end
+
+				controlFrame:ClearAllPoints();
+				controlFrame:SetPoint(point .. "LEFT", parent, rel_point, 0, 0) -- default left of plugin
+
+				-- Adjust control frame position if it's off the screen
+				local offscreenX = TitanUtils_GetOffscreen(controlFrame);
+				if (offscreenX == -1) then
+					-- Off to left of screen which should not happen...
+				elseif (offscreenX == 1) then
+					-- off to right of screen, flip to right of plugin
+					controlFrame:ClearAllPoints();
+					controlFrame:SetPoint(point .. "RIGHT", parent, rel_point, 0, 0)
+				end
+
+				controlFrame:Show();
+			end
+		elseif (button == "RightButton") then
+			TitanUtils_CloseAllControlFrames();
+			-- Show RightClickMenu anyway
+			TitanPanelRightClickMenu_Close();
+			TitanPanelRightClickMenu_Toggle(self);
+		end
+
+		TitanPanelTooltip:Hide();
+	end
+end
+
+---API Handle the OnEnter event of the requested Titan plugin.
+---@param self table Plugin frame
+--- The cursor has moved over the plugin so show the plugin tooltip if there are no blockers.
+function TitanPanelButton_OnEnter(self)
+	local id = nil;
+	-- ensure that the 'self' passed is a valid frame reference
+	if self and self:GetName() then
+		id = TitanUtils_GetButtonID(self:GetName())
+	end
+
+	if (id) then
+		TitanPanelButton_SetTooltip(self)
+	end
+
+	-- If tooltip was requested and successful, the tooltip OnUpdate
+	-- will be active.
+	-- NOTE: !!! The tooltip scripts will check if the mouseis over this
+	-- plugin, if so then the tooltip will be kept visible !!!
+end
+
+---API Handle the OnLeave event of the requested Titan plugin.
+---@param self table Plugin frame
+function TitanPanelButton_OnLeave(self)
+	local id = nil;
+	-- ensure that the 'self' passed is a valid frame reference
+	if self and self:GetName() then
+		id = TitanUtils_GetButtonID(self:GetName())
+	end
+
+	local time_out = max (TitanPanelGetVar("TooltipTimeout"), 0.1)
+	TitanUtils_StartFrameCounting(TitanPanelTooltip, time_out)
+
+	-- The cursor has moved away from the plugin.
+	-- Notes: 
+	-- - The OnUpdate of the tooltip will Hide it.
+	-- - Scale set OnShow
+	--[[
+	if TitanPanelGetVar("DisableTooltipFont") then
+		-- use game font & scale
+	else
+		-- use Titan font & scale
+--		TitanPanelTooltip:SetScale(TitanTooltipOrigScale);
+		TitanTooltipScaleSet = 0;
+	end
+	--]]
+end
+
+-- local routines for Update Button
+
+
+local format_with_label = { [0] = "" } -- Set format string once
+for idx = 1, 4 do
+	format_with_label[idx] = "%s%s" .. (TITAN_PANEL_LABEL_SEPARATOR .. "%s%s"):rep(idx - 1)
+end
+---local Set the width of the given icon Titan plugin - icon only.
+---@param id string Plugin id
+--- The plugin is expected to tell Titan what routine is to be called in <self>.registry.buttonTextFunction.
+--- Note: Titan handles up to 4 label-value pairs. User may customize (override) the plugin labels.
+--- The text routine is called in protected mode to ensure the Titan main routines still run.
+local function TitanPanelButton_SetButtonText(id)
+	local dbg_msg = "ptxt : '" .. tostring(id) .. "'"
+	local ok = false
+
+	if (id and TitanUtils_IsPluginRegistered(id)) then
+		-- seems valid, registered plugin
+		ok = true
+	else
+		-- The plugin is not registered!
+		dbg_msg = dbg_msg .. " | unregistered plugin"
+	end
+
+	local pdata = TitanUtils_GetPlugin(id) -- get plugin data
+	local buttonTextFunction = {} ---@type function
+
+	if pdata then
+		local bFunction = pdata.buttonTextFunction
+		if type(bFunction) == 'string' then
+			-- Function MUST be in global namespace
+			buttonTextFunction = _G[bFunction]
+			ok = true
+		elseif type(bFunction) == 'function' then
+			-- Can be global or local to the plugin
+			buttonTextFunction = bFunction
+			ok = true
+		else
+			dbg_msg = dbg_msg .. " | invalid function type"
+			-- silently ...
+		end
+	else
+		-- silently leve...
+		dbg_msg = dbg_msg .. " | invalid plugin data"
+	end
+
+	if ok and buttonTextFunction then
+		local label1, value1, label2, value2, label3, value3, label4, value4
+		local call_ok = false
+		local button = TitanUtils_GetButton(id) -- get plugin frame
+		local buttonText = {}
+
+		local text = false
+		if button then
+			buttonText = _G[button:GetName() .. TITAN_PANEL_TEXT];
+			button:SetScale(TitanPanelGetVar("Scale"))
+
+			local newfont = media:Fetch("font", TitanPanelGetVar("FontName"))
+			if newfont then
+				buttonText:SetFont(newfont, TitanPanelGetVar("FontSize"))
+			end
+
+			-- We'll be paranoid here and call the button text function in protected mode.
+			-- In case the function fails it will not take Titan with it...
+			call_ok,
+			label1, value1, label2, value2, label3, value3, label4, value4 =
+				pcall(buttonTextFunction, id)
+
+			if call_ok then
+				-- All is good
+				text = true
+			else
+				buttonText:SetText("<?>")
+				dbg_msg = dbg_msg .. " | Err '" .. tostring(label1) .. "'"
+			end
+		else
+			dbg_msg = dbg_msg .. " | invalid plugin id"
+		end
+
+		--=====================================
+		-- Determine the label value pairs : 1 - 4
+		-- Each could be custom per user
+		--
+		-- NumLabelsSeen - used for the config to avoid confusing user
+		-- Plugin MUST have been shown at least once.
+
+		-- In the case of first label only (no value), set the button and return.
+		--
+		-- IF there is a label or value for the 1st then check for more values.
+		-- 2025 Nov : Change to check each value (1-4) rather than nest them.
+		if text and
+			label1 and
+			not (label2 or label3 or label4
+				or value1 or value2 or value3 or value4) then
+			buttonText:SetText(label1)
+
+			TitanSetVar(id, "NumLabelsSeen", 1)
+
+			dbg_msg = dbg_msg .. " | single label; no value | "
+		else
+			local show_label = TitanGetVar(id, "ShowLabelText")
+			local values = 0
+			if label1 or value1 then
+				values = 1
+				if show_label then
+					if TitanGetVar(id, "CustomLabelTextShow") then
+						-- override the label per the user
+						label1 = TitanGetVar(id, "CustomLabelText")
+					else
+					end
+				else
+					label1 = ""
+				end
+				if label2 or value2 then
+					values = 2
+					if show_label then
+						if TitanGetVar(id, "CustomLabel2TextShow") then
+							-- override the label per the user
+							label2 = " " .. TitanGetVar(id, "CustomLabel2Text")
+						else
+							label2 = " " .. label2
+						end
+					else
+						label2 = " "
+					end
+				end
+				if label3 or value3 then
+					values = 3
+					if show_label then
+						if TitanGetVar(id, "CustomLabel3TextShow") then
+							-- override the label per the user
+							label3 = " " .. TitanGetVar(id, "CustomLabel3Text")
+						else
+							label3 = " " .. label3
+						end
+					else
+						label3 = " "
+					end
+				end
+				if label4 or value4 then
+					values = 4
+					if show_label then
+						if TitanGetVar(id, "CustomLabel43TextShow") then
+							-- override the label per the user
+							label4 = " " .. TitanGetVar(id, "CustomLabel4Text")
+						else
+							label4 = " " .. label4
+						end
+					else
+						label4 = " "
+					end
+				end
+				dbg_msg = dbg_msg .. " | ok | " .. tostring(values)
+			else
+				-- no label or value
+				-- Do nothing, it could be the right action for the plugin
+				dbg_msg = dbg_msg .. " | no label or value : " .. tostring(values)
+			end
+
+			TitanSetVar(id, "NumLabelsSeen", values)
+
+			--[==[
+			-- values tells which format to use from the array
+			buttonText:SetFormattedText(format_with_label[values],
+				label1 or "", value1 or "",
+				label2 or "", value2 or "",
+				label3 or "", value3 or "",
+				label4 or "", value4 or ""
+			)
+			--]==]
+			buttonText:SetText("" -- formatting was inserting undesired spaces
+				.. (label1 or "") .. (value1 or "")
+				.. (label2 or "") .. (value2 or "")
+				.. (label3 or "") .. (value3 or "")
+				.. (label4 or "") .. (value4 or "")
+			)
+		end
+	else
+		-- no valid routine to update the plugin text
+		dbg_msg = dbg_msg .. " | no valid routine found"
+	end
+	Titan_Debug.Out('titan', 'plugin_text', dbg_msg)
+end
+
+---local Set the width of the given Titan plugin - text only.
+---@param id string Plugin id
+---@param setButtonWidth? integer Width in pixels
+--- Titan uses a tolerance setting to prevent endless updating of the text width.
+local function TitanPanelButton_SetTextButtonWidth(id, setButtonWidth)
+	if (id) then
+		local button = TitanUtils_GetButton(id)
+		if button then
+			local text = _G[button:GetName() .. TITAN_PANEL_TEXT]
+			local bwid = button:GetWidth()
+			local twid = text:GetWidth()
+			if (setButtonWidth
+					or bwid == 0
+					or bwid - twid > TITAN_PANEL_BUTTON_WIDTH_CHANGE_TOLERANCE
+					or bwid - twid < -TITAN_PANEL_BUTTON_WIDTH_CHANGE_TOLERANCE) then
+				button:SetWidth(twid);
+				TitanPanelButton_Justify();
+			end
+		else
+			-- no plugin registered, be silent
+		end
+	else
+		-- no plugin received, be silent
+	end
+end
+
+---local Set the width of the given Titan plugin - icon only.
+---@param id string Plugin id
+--- Wrap up by (re)drawing the plugins on the Bar.
+--- Titan uses a tolerance setting to prevent endless updating of the text width.
+local function TitanPanelButton_SetIconButtonWidth(id)
+	if (id) then
+		local button = TitanUtils_GetButton(id)
+		if button and (TitanUtils_GetPlugin(id).iconButtonWidth) then
+			button:SetWidth(TitanUtils_GetPlugin(id).iconButtonWidth);
+		else
+			-- no plugin registered, be silent
+		end
+	else
+		-- no plugin received, be silent
+	end
+end
+
+---local Set the width of the given Titan plugin - combo icon & text.
+---@param id string Plugin id
+---@param setButtonWidth? integer Width in pixels; default to .registry.iconWidth
+--- Wrap up by (re)drawing the plugins on the Bar.
+--- Titan uses a tolerance setting to prevent endless updating of the text width.
+local function TitanPanelButton_SetComboButtonWidth(id, setButtonWidth)
+	-- TODO - ensure this routine is proper - need this param?
+	-- icon width default to .registry.iconWidth before getting the actual width
+	if (id) then
+		local button = TitanUtils_GetButton(id)
+		if not button then return end -- sanity check
+
+		local text = _G[button:GetName() .. TITAN_PANEL_TEXT];
+		local icon = _G[button:GetName() .. "Icon"];
+
+		local iwid = icon:GetWidth()
+		local twid = text:GetWidth()
+		local bwid = button:GetWidth()
+
+		local iconButtonWidth, newButtonWidth;
+
+		-- Get icon button width
+		iconButtonWidth = 0;
+		if (TitanUtils_GetPlugin(id).iconButtonWidth) then
+			iconButtonWidth = TitanUtils_GetPlugin(id).iconButtonWidth;
+		elseif (iwid) then
+			iconButtonWidth = iwid
+		end
+
+		if (TitanGetVar(id, "ShowIcon") and (iconButtonWidth ~= 0)) then
+			icon:Show();
+			text:ClearAllPoints();
+			text:SetPoint("LEFT", icon:GetName(), "RIGHT", 2, 1);
+
+			newButtonWidth = twid + iconButtonWidth;
+		else
+			icon:Hide();
+			text:ClearAllPoints();
+			text:SetPoint("LEFT", button:GetName(), "LEFT", 0, 1);
+
+			newButtonWidth = twid
+		end
+
+		if (setButtonWidth
+				or bwid == 0
+				or bwid - newButtonWidth > TITAN_PANEL_BUTTON_WIDTH_CHANGE_TOLERANCE
+				or bwid - newButtonWidth < -TITAN_PANEL_BUTTON_WIDTH_CHANGE_TOLERANCE)
+		then
+			button:SetWidth(newButtonWidth);
+			TitanPanelButton_Justify();
+		end
+	end
+end
+
+---API Update the display of the given Titan plugin.
+---@param id string Plugin id
+---@param setButtonWidth? integer Width in pixels
+--- Use after any change to icon, label, or text (depending on Titan template used)
+--- TitanPanelButton_UpdateButton(ID)
+function TitanPanelButton_UpdateButton(id, setButtonWidth)
+	--	Used by plugins
+	local plugin = TitanUtils_GetPlugin(id)
+	-- safeguard to avoid errors
+	if plugin and TitanUtils_IsPluginRegistered(id) then
+		if (TitanPanelButton_IsText(id)) then
+			-- Update textButton
+			TitanPanelButton_SetButtonText(id);
+			TitanPanelButton_SetTextButtonWidth(id, setButtonWidth);
+		elseif (TitanPanelButton_IsIcon(id)) then
+			-- Update iconButton
+			TitanPanelButton_SetButtonIcon(id, (plugin.iconCoords or nil),
+				(plugin.iconR or nil), (plugin.iconG or nil), (plugin.iconB or nil)
+			);
+			TitanPanelButton_SetIconButtonWidth(id);
+		elseif (TitanPanelButton_IsCombo(id)) then
+			-- Update comboButton
+			TitanPanelButton_SetButtonText(id);
+			TitanPanelButton_SetButtonIcon(id, (plugin.iconCoords or nil),
+				(plugin.iconR or nil), (plugin.iconG or nil), (plugin.iconB or nil)
+			);
+			TitanPanelButton_SetComboButtonWidth(id, setButtonWidth);
+		end
+	else
+		return
+	end
+end
+
+---API Update the tooltip of the given Titan plugin.
+---@param self table Plugin frame
+function TitanPanelButton_UpdateTooltip(self)
+	if not self then return end
+	if (TitanPanelTooltip:IsOwned(self)) then
+		local id = TitanUtils_GetButtonID(self:GetName());
+
+		TitanPanelButton_SetTooltip(self);
+	end
+end
+
+---API Refresh the display of the passed in Titan plugin.
+---@param table table | string Either {plugin id, action} OR plugin id
+---@param oldarg string? action OR nil
+--- This is used by some plugins. It is not used within Titan.
+--- Action :
+--- 1 = refresh button
+--- 2 = refresh tooltip
+--- 3 = refresh button and tooltip
+function TitanPanelPluginHandle_OnUpdate(table, oldarg)
+	--- This is used by some plugins.
+	local id, updateType = nil, nil
+	-- set the id and updateType
+	-- old method
+	if table and type(table) == "string" and oldarg then
+		id = table
+		updateType = oldarg
+	end
+	-- new method
+	if table and type(table) == "table" then
+		if table[1] then id = table[1] end
+		if table[2] then updateType = table[2] end
+	end
+
+	-- id is required
+	if id then
+		if updateType == TITAN_PANEL_UPDATE_BUTTON
+			or updateType == TITAN_PANEL_UPDATE_ALL then
+			TitanPanelButton_UpdateButton(id)
+		end
+
+		if (updateType == TITAN_PANEL_UPDATE_TOOLTIP
+				or updateType == TITAN_PANEL_UPDATE_ALL)
+			and (_G[TitanUtils_ButtonName(id)]:IsMouseOver()) then
+--			and MouseIsOver(_G[TitanUtils_ButtonName(id)]) then
+			TitanPanelButton_SetTooltip(_G[TitanUtils_ButtonName(id)])
+		end
+	end
+end
+
+---Titan Poorly named routine that sets the OnDragStart & OnDragStop scripts of a Titan plugin.
+---@param id string Plugin id
+function TitanPanelDetectPluginMethod(id)
+	-- Ensure the id is not nil
+	if not id then return end
+	local TitanPluginframe = _G[TitanUtils_ButtonName(id)];
+	-- Ensure the frame is valid
+	if not TitanPluginframe and TitanPluginframe:GetName() then return end -- sanity check...
+
+	-- Set the OnDragStart script
+	TitanPluginframe:SetScript("OnDragStart", function(self)
+		if not IsShiftKeyDown()
+			and not IsControlKeyDown()
+			and not IsAltKeyDown() then
+			TitanPanelButton_OnDragStart(self);
+		end
+	end)
+
+	-- Set the OnDragStop script
+	TitanPluginframe:SetScript("OnDragStop", function(self)
+		TitanPanelButton_OnDragStop(self);
+	end)
+end
+
+---Titan Sets the OnDragStart & OnDragStop scripts of a Titan plugin.
+---@param self Button Plugin
+function TitanPanelButton_AddMouseScripts(self)
+	-- Ensure the id is not nil
+	if self then
+		self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
+		self:RegisterForDrag("LeftButton")
+
+		-- Set the OnDragStart script
+		self:SetScript("OnDragStart", function(self)
+			if not IsShiftKeyDown()
+				and not IsControlKeyDown()
+				and not IsAltKeyDown() then
+				TitanPanelButton_OnDragStart(self)
+			end
+		end)
+
+		-- Set the OnDragStop script
+		self:SetScript("OnDragStop", function(self)
+			TitanPanelButton_OnDragStop(self)
+		end)
+	else
+		-- nothing to add to ??
+	end
+end
+
+---API Set the icon of the given Titan plugin.
+---@param id string Plugin id
+---@param iconCoords table? As {left, right, top, bottom}
+---@param iconR number? Red (.0. - 1.0)
+---@param iconG number? Green (.0. - 1.0)
+---@param iconB number? Blue (.0. - 1.0)
+--- Using TitanPanelButton_UpdateButton is preferred unless coords are needed
+function TitanPanelButton_SetButtonIcon(id, iconCoords, iconR, iconG, iconB)
+	if (id and TitanUtils_IsPluginRegistered(id)) then
+		local button = TitanUtils_GetButton(id)
+		if button then
+			local icon = _G[button:GetName() .. "Icon"];
+			local iconTexture = TitanUtils_GetPlugin(id).icon;
+			local iconWidth = TitanUtils_GetPlugin(id).iconWidth;
+
+			if (iconTexture) and icon then
+				icon:SetTexture(iconTexture);
+			end
+			if (iconWidth) and icon then
+				icon:SetWidth(iconWidth);
+			end
+
+			-- support for iconCoords, iconR, iconG, iconB attributes
+			if iconCoords and icon then
+				icon:SetTexCoord(unpack(iconCoords))
+			end
+			if iconR and iconG and iconB and icon then
+				icon:SetVertexColor(iconR, iconG, iconB)
+			end
+		else
+			-- plugin not registered
+		end
+	end
+end
+
+---Titan Get the type of the given Titan plugin.
+--- This assumes that the developer is playing nice and is using the Titan templates as is...
+---@param id string Plugin id name
+---@return integer type (text-1, icon-2, combo-3 (default))
+function TitanPanelButton_GetType(id)
+	-- This assumes that the developer is playing nice and is using the Titan templates as is...
+	-- id is required
+	local type = 0 -- unknown
+	if id then
+		local button = TitanUtils_GetButton(id);
+		if button then
+			local text = _G[button:GetName() .. TITAN_PANEL_TEXT];
+			local icon = _G[button:GetName() .. "Icon"];
+
+			if (text and icon) then
+				type = TITAN_PANEL_BUTTON_TYPE_COMBO;
+			elseif (text and not icon) then
+				type = TITAN_PANEL_BUTTON_TYPE_TEXT;
+			elseif (not text and icon) then
+				type = TITAN_PANEL_BUTTON_TYPE_ICON;
+			elseif (not text and not icon) then
+				type = TITAN_PANEL_BUTTON_TYPE_CUSTOM;
+			end
+		else
+			type = TITAN_PANEL_BUTTON_TYPE_COMBO;
+		end
+	else
+		-- no id...
+	end
+
+	return type
+end
+
+---Titan Apply saved Bar position to the Bar frame.
+--- Bit of a sledge hammer; used when loading a profile over the current so the Bars are properly placed.
+---@param frame_str string Bar frame name
+function TitanPanelButton_ApplyBarPos(frame_str)
+	--
+	local frame = _G[frame_str]
+	local bdata = TitanBarData[frame_str]
+	if frame then
+		frame:ClearAllPoints();
+		if bdata.user_move then
+			local x, y, w = TitanVariables_GetBarPos(frame_str)
+			frame:SetPoint(bdata.show.pt, bdata.show.rel_fr, bdata.show.rel_pt, x, y)
+		else
+			-- full bar, ignore
+		end
+	end
+end
+
+---Titan Loads the Backdrop for TitanOptionsSliderTemplate with new 9.0 API
+---@param self table Control frame
+function TitanOptionsSliderTemplate_OnLoad(self)
+	self:SetBackdrop({
+		bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+		edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
+		tile = true,
+		insets = {
+			left = 6,
+			right = 6,
+			top = 3,
+			bottom = 3,
+		},
+		tileSize = 8,
+		edgeSize = 8,
+	})
+end
+
+-- Set tool tip scripts
+-- OnUpdate starts as soon as OnShow is done...
+local tt_frame = TitanPanelTooltip
+
+local debug_over = false
+local debug_over_new = false
+tt_frame:SetScript("OnUpdate", function(self, elapsed)
+	-- Keep tooltip open as long as the curser stays over plugin 
+	local is_over = self.plugin_frame:IsMouseOver()
+	if is_over then
+		TitanUtils_StopFrameCounting(self)
+		debug_over_new = true
+	else
+		local status = TitanUtils_CheckFrameCounting(self, elapsed)
+		if status == "Active" then
+			-- counting down
+		else
+			-- should catch all the edge cases
+			self:Hide()
+		end
+		debug_over = false
+	end
+
+	--[[
+	if debug_over ~= debug_over_new then -- slow output a little...
+		debug_over = debug_over_new
+		local dbg_msg = "OnUpdate"
+			.. " over: " .. tostring(is_over) .. ""
+			.. " timeout: " .. tostring(time_out) .. ""
+			.. " isCounting: " .. tostring(self.isCounting) .. ""
+			.. " timer: " .. tostring(self.frameTimer) .. ""
+		Titan_Debug.Out('titan', 'tool_tips', dbg_msg)
+	else
+	end
+	--]]
+end)

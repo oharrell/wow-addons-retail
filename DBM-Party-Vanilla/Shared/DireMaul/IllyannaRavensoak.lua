@@ -1,0 +1,11 @@
+local mod	= DBM:NewMod(407, "DBM-Party-Vanilla", DBM:IsPostCata() and 3 or 6, 230)
+local L		= mod:GetLocalizedStrings()
+mod:SetRevision("20260905035030")
+mod:DisableHardcodedOptions()
+mod:SetCreatureID(11488)
+mod:SetEncounterID(347)
+mod:SetModelID(11270)
+mod:SetZone(429)
+mod:RegisterCombat("combat")
+mod:DisableFriendlyDetection()
+

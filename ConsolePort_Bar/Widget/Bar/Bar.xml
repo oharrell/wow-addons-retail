@@ -1,0 +1,12 @@
+<Ui>
+	<Script file="Bar.lua"/>
+
+	<Frame name="CPActionBar" inherits="SecureHandlerStateTemplate, SecureHandlerShowHideTemplate"
+		mixin="CPActionBar" 
+		virtual="true"
+		clampedToScreen="true"
+		movable="true"
+		hidden="true"
+	/>
+
+</Ui>

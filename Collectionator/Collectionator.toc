@@ -1,0 +1,24 @@
+## Interface: 120005, 50504
+## Title: Collectionator
+## Version: 85
+## Author: plusmouse
+## RequiredDeps: Auctionator
+## SavedVariables: COLLECTIONATOR_RECIPES_CACHE, COLLECTIONATOR_PURCHASES
+## IconTexture: Interface\AddOns\Collectionator\Images\logo
+## Category-enUS: Auctions
+## Category-deDE: Auktionen
+## Category-esES: Subastas
+## Category-esMX: Subastas
+## Category-frFR: Ventes
+## Category-itIT: Aste
+## Category-koKR: 경매
+## Category-ptBR: Leilões
+## Category-ruRU: Лоты
+## Category-zhCN: 拍卖
+## Category-zhTW: 拍賣
+
+Locales\Manifest.xml
+
+Data\Manifest.xml
+
+Source\Manifest.xml

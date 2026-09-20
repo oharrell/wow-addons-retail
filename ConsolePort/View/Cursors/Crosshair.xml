@@ -1,0 +1,15 @@
+<Ui>
+
+	<Frame name="ConsolePortCrosshair" parent="UIParent" hidden="true" frameStrata="LOW">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Line parentKey="Top"/>
+				<Line parentKey="Left"/>
+				<Line parentKey="Right"/>
+				<Line parentKey="Bottom"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+</Ui>

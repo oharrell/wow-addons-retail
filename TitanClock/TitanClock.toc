@@ -1,0 +1,10 @@
+## Interface: 120100, 50504, 20506, 11509
+## Title: Titan Panel [|cffeda55fClock|r] |cff00aa009.3.2|r
+## Version: 9.3.2
+## IconTexture: Interface\Icons\Spell_Nature_TimeStop
+## Notes: Adds a clock to Titan Panel
+## Author: Titan Panel Development Team
+## SavedVariables: 
+## OptionalDeps: 
+## Dependencies: Titan
+TitanClock.lua

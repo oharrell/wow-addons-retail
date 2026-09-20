@@ -1,0 +1,10 @@
+## Interface: 120000, 110207
+## Category-enUS: Map
+## Version: v12
+## Title: Waypoint
+## IconTexture: Interface\AddOns\Waypoint\Logo.png
+## Notes: Simple and lightweight /way handling
+## Author: Froidre
+## X-Curse-Project-ID: 1094455
+
+Core.lua

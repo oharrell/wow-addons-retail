@@ -1,0 +1,38 @@
+if not DBM:IsSeasonal("SeasonOfDiscovery") then return end
+local mod	= DBM:NewMod("Pyranis", "DBM-Party-Vanilla", 21)
+local L		= mod:GetLocalizedStrings()
+
+mod:SetRevision("20260905035030")
+mod:DisableHardcodedOptions()
+mod:SetEncounterID(3030)
+mod:SetModelID(121845)
+mod:SetCreatureID(227140)
+mod:SetZone(2784)
+
+mod:RegisterCombat("combat")
+
+if DBM:IsRestricted() then
+	--do stuff
+	--mod:AddAuraSoundOption(372820, true, 372820, 1, 2, "watchfeet", 8, 0)
+else
+
+	mod:RegisterEventsInCombat(
+	--	"SPELL_CAST_START",
+	--	"SPELL_CAST_SUCCESS,
+	--	"SPELL_AURA_APPLIED"
+	)
+
+	--function mod:OnCombatStart(delay)
+
+	--end
+
+	-- Summons adds that need to be killed, but didn't fully understand when they are summoned; also, it's really really obvious that this happens.
+
+	--[[
+	function mod:SPELL_CAST_START(args)
+		if args:IsSpell(5174) then
+
+		end
+	end
+	--]]
+end

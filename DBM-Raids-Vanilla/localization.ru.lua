@@ -1,0 +1,1569 @@
+if GetLocale() ~= "ruRU" then return end
+
+local L
+
+------------
+-- Skeram --
+------------
+L = DBM:GetModLocalization("Skeram")
+
+L:SetGeneralLocalization{
+	name = "Пророк Скерам"
+}
+
+----------------
+-- Three Bugs --
+----------------
+L = DBM:GetModLocalization("ThreeBugs")
+
+L:SetGeneralLocalization{
+	name = "Семейство жуков"
+}
+L:SetMiscLocalization{
+	Yauj = "Принцесса Яудж",
+	Vem = "Вем",
+	Kri = "Лорд Кри"
+}
+L:SetWarningLocalization({
+    WarnBugDied = "%s умирает (Осталось %d убийств)"
+})
+L:SetOptionLocalization{
+	WarnBugDied = "Показывать предупреждение об оставшихся жуках"
+}
+
+-------------
+-- Sartura --
+-------------
+L = DBM:GetModLocalization("Sartura")
+
+L:SetGeneralLocalization{
+	name = "Боевой страж Сартура"
+}
+L:SetWarningLocalization({
+    WarnGuardDied = "Королевский страж Сартуры: %d/3" -- NPC ID 15984
+})
+L:SetOptionLocalization{
+	WarnGuardDied = "Показывать предупреждение об оставшемся Королевском страже Сартуры"
+}
+
+--------------
+-- Fankriss --
+--------------
+L = DBM:GetModLocalization("Fankriss")
+
+L:SetGeneralLocalization{
+	name = "Фанкрисс Непреклонный"
+}
+
+--------------
+-- Viscidus --
+--------------
+L = DBM:GetModLocalization("Viscidus")
+
+L:SetGeneralLocalization{
+	name = "Нечистотон"
+}
+L:SetWarningLocalization{
+	WarnFreeze	= "Заморозка: %d/3",
+	WarnShatter	= "Разрушение: %d/2"
+}
+L:SetOptionLocalization{
+	WarnFreeze	= "Показывать предупреждение о состоянии заморозки",
+	WarnShatter	= "Показывать предупреждение о состоянии разрушения"
+}
+L:SetMiscLocalization{
+	Slow	= "начинает замедляться",
+	Freezing= "замораживается",
+	Frozen	= "застывает",
+	Phase4 	= "начинает раскалываться",
+	Phase5 	= "едва держится",
+	FrostHits	= "Удары льда",
+	FrostHitsPerSecond	= "Удары льда в секунду",
+	MeleeHitsPerSecond	= "Ближние удары в секунду"
+}
+-------------
+-- Huhuran --
+-------------
+L = DBM:GetModLocalization("Huhuran")
+
+L:SetGeneralLocalization{
+	name = "Принцесса Хухуран"
+}
+---------------
+-- Twin Emps --
+---------------
+L = DBM:GetModLocalization("TwinEmpsAQ")
+
+L:SetGeneralLocalization{
+	name = "Императоры-близнецы"
+}
+
+------------
+-- C'Thun --
+------------
+L = DBM:GetModLocalization("CThun")
+
+L:SetGeneralLocalization{
+	name = "К'Тун"
+}
+L:SetWarningLocalization{
+	WarnEyeTentacle 		= "Появляются Глазные отростки!",
+	WarnClawTentacle2		= "Появляется Когтещупальце!",
+	WarnGiantEyeTentacle	= "Появляется гигантский Глазной отросток!",
+	WarnGiantClawTentacle	= "Появляется гигантское Когтещупальце!",
+	SpecWarnWeakened		= "К'Тун ослаблен!"
+}
+L:SetTimerLocalization{
+	TimerEyeTentacle		= "Глазные отростки",
+	TimerGiantEyeTentacle	= "Гигантский Глазной отросток",
+	TimerClawTentacle		= "Когтещупальце",
+	TimerGiantClawTentacle	= "Гигантское Когтещупальце",
+	TimerWeakened			= "К'Тун ослаблен"
+}
+L:SetOptionLocalization{
+	WarnEyeTentacle			= "Показывать предупреждение для Глазных отростков",
+	WarnClawTentacle2		= "Показывать предупреждение для Когтещупальца",
+	WarnGiantEyeTentacle	= "Показывать предупреждение для Гигантского глазного отростка",
+	WarnGiantClawTentacle	= "Показывать предупреждение для Гигантского Когтещупальца",
+	SpecWarnWeakened		= "Показывать спецпредупреждение, когда босс ослабевает",
+	TimerEyeTentacle		= "Отсчет времени до следующих Глазных отростков",
+	TimerClawTentacle		= "Отсчет времени до следующего Когтещупальца",
+	TimerGiantEyeTentacle	= "Отсчет времени до следующих Гигантских Глазных отростков",
+	TimerGiantClawTentacle	= "Отсчет времени до следующего Гигантского Когтещупальца",
+	TimerWeakened			= "Отсчет времени продолжительности ослабления босса"
+}
+L:SetMiscLocalization{
+	Stomach		= "Желудок",
+	FleshTent	= "Мясистое щупальце",
+	NotValid	= "AQ40 частично очищен. Осталось %s дополнительных боссов."
+}
+
+----------------
+-- Ouro --
+----------------
+L = DBM:GetModLocalization("Ouro")
+
+L:SetGeneralLocalization{
+	name = "Оуро"
+}
+L:SetWarningLocalization{
+	WarnSubmerge		= "Закапывание",
+	WarnEmerge			= "Появление"
+}
+L:SetTimerLocalization{
+	TimerSubmerge		= "Закапывание",
+	TimerEmerge			= "Появление"
+}
+L:SetOptionLocalization{
+	WarnSubmerge		= "Показывать предупреждение о закапывании",
+	TimerSubmerge		= "Отсчет времени до закапывания",
+	WarnEmerge			= "Показывать предупреждение о появлении",
+	TimerEmerge			= "Отсчет времени до появления",
+	SpecWarnEye			= "Показывать предупреждение о Гигантском глазе"
+}
+
+----------------
+-- AQ40 Trash --
+----------------
+L = DBM:GetModLocalization("AQ40Trash")
+
+L:SetGeneralLocalization{
+	name = "Трэш: Ан'Кираж 40"
+}
+
+L:SetTimerLocalization{
+	TimerExplosion = "Взрывающиеся Призраки"
+}
+
+L:SetWarningLocalization{
+	WarnExplosion = "Появился одиночный взрывающийся Призрак - уклоняйтесь",
+	SpecWarnExplosion = "Взрывающиеся Призраки - уклоняйтесь",
+}
+L:SetOptionLocalization{
+	WarnExplosion = "Показывать предупреждение взрывающихся Призраков ($spell:1214871)",
+	SpecWarnExplosion = "Показывать спецпредупреждение при появлении нескольких взрывающихся Призраков ($spell:1214871)",
+	TimerExplosion = "Отсчет времени до появления нескольких взрывающихся Призраков ($spell:1214871)"
+}
+
+---------------
+-- Kurinnaxx --
+---------------
+L = DBM:GetModLocalization("Kurinnaxx")
+
+L:SetGeneralLocalization{
+	name 		= "Куриннакс"
+}
+
+------------
+-- Rajaxx --
+------------
+L = DBM:GetModLocalization("Rajaxx")
+
+L:SetGeneralLocalization{
+	name 		= "Генерал Раджакс"
+}
+L:SetWarningLocalization{
+	WarnWave	= "Волна %s"
+}
+L:SetOptionLocalization{
+	WarnWave	= "Показывать предупреждение о следующей волне"
+}
+L:SetMiscLocalization{
+	Wave12		= "Они пришли. Постарайся не дать себя убить, ",
+	Wave12Alt	= "Раджакс, напомни, когда я в последний раз обещал тебя убить?",
+	Wave3		= "Час возмездия близок! Да охватит мрак сердца наших врагов!",
+	Wave4		= "Мы не будем больше ждать за запертыми дверьми и каменными стенами! Мы не будем больше отказываться от возмездия! Даже драконы содрогнутся перед нашим гневом!",
+	Wave5		= "Пусть наши враги трепещут! Смерть им!",
+	Wave6		= "Олений Шлем будет скулить и молить о пощаде, в точности как его сопливый сынок! Тысячелетняя несправедливость сегодня закончится!",
+	Wave7		= "Фэндрал! Твой час пробил! Иди же, прячься в Изумрудном Сне и молись, чтобы мы до тебя не добрались!",
+	Wave8		= "Настырная тварь! Я сам тебя убью!"
+}
+
+----------
+-- Moam --
+----------
+L = DBM:GetModLocalization("Moam")
+
+L:SetGeneralLocalization{
+	name 		= "Моам"
+}
+
+----------
+-- Buru --
+----------
+L = DBM:GetModLocalization("Buru")
+
+L:SetGeneralLocalization{
+	name 		= "Буру Ненасытный"
+}
+L:SetWarningLocalization{
+	WarnPursue		= "Преследует >%s<",
+	SpecWarnPursue	= "Преследует Вас!",
+	WarnDismember	= "%s на >%s< (%s)"
+}
+L:SetOptionLocalization{
+	WarnPursue		= "Показывать предупреждение о преследуемых целях",
+	SpecWarnPursue	= "Показывать спецпредупреждение, когда преследование на Вас",
+	WarnDismember	= DBM_CORE_L.AUTO_ANNOUNCE_OPTIONS.spell:format(96)
+}
+L:SetMiscLocalization{
+	PursueEmote 	= "смотрит на"
+}
+
+-------------
+-- Ayamiss --
+-------------
+L = DBM:GetModLocalization("Ayamiss")
+
+L:SetGeneralLocalization{
+	name 		= "Аямисса Охотница"
+}
+
+--------------
+-- Ossirian --
+--------------
+L = DBM:GetModLocalization("Ossirian")
+
+L:SetGeneralLocalization{
+	name 		= "Оссириан Неуязвимый"
+}
+
+----------------
+-- AQ20 Trash --
+----------------
+L = DBM:GetModLocalization("AQ20Trash")
+
+L:SetGeneralLocalization{
+	name = "Трэш: Ан'Кираж 20"
+}
+
+L:SetTimerLocalization{
+	TimerExplosion = "Взрывающиеся Призраки"
+}
+
+L:SetWarningLocalization{
+	WarnExplosion = "Появился одиночный взрывающийся Призрак - уклоняйтесь",
+	SpecWarnExplosion = "Взрывающиеся Призраки - уклоняйтесь",
+}
+L:SetOptionLocalization{
+	WarnExplosion = "Показывать предупреждение взрывающихся Призраков ($spell:1214871)",
+	SpecWarnExplosion = "Показывать спецпредупреждение при появлении нескольких взрывающихся Призраков ($spell:1214871)",
+	TimerExplosion = "Отсчет времени до появления нескольких взрывающихся Призраков ($spell:1214871)"
+}
+
+-----------------
+--  Razorgore  --
+-----------------
+L = DBM:GetModLocalization("Razorgore")
+
+L:SetGeneralLocalization{
+	name = "Бритвосмерт Неукротимый"
+}
+
+L:SetMiscLocalization{
+	Pull 	= "Нападение на инкубатор! Поднимайте тревогу! Все на защиту кладки!"
+}
+
+-------------------
+--  Vaelastrasz  --
+-------------------
+L = DBM:GetModLocalization("Vaelastrasz")
+
+L:SetGeneralLocalization{
+	name = "Валестраз Порочный"
+}
+L:SetMiscLocalization{
+	Event	= "Слишком поздно, друзья"
+}
+
+-----------------
+--  Broodlord  --
+-----------------
+L = DBM:GetModLocalization("Broodlord")
+
+L:SetGeneralLocalization{
+	name = "Предводитель драконов Разящий Бич"
+}
+
+L:SetMiscLocalization{
+	Pull	= "Вас не должно быть здесь! Вы сами обрекли себя на смерть!"
+}
+
+---------------
+--  Firemaw  --
+---------------
+L = DBM:GetModLocalization("Firemaw")
+
+L:SetGeneralLocalization{
+	name = "Огнечрев"
+}
+
+---------------
+--  Ebonroc  --
+---------------
+L = DBM:GetModLocalization("Ebonroc")
+
+L:SetGeneralLocalization{
+	name = "Черноскал"
+}
+
+----------------
+--  Flamegor  --
+----------------
+L = DBM:GetModLocalization("Flamegor")
+
+L:SetGeneralLocalization{
+	name = "Пламегор"
+}
+
+----------------
+--  Ebonroc and Flamegor  --
+----------------
+L = DBM:GetModLocalization("EbonrocandFlamegor")
+
+L:SetGeneralLocalization{
+	name = "Черноскал и Пламегор"
+}
+
+L:SetTimerLocalization{
+	TimerBrandCD	= "Клеймо"
+}
+L:SetOptionLocalization{
+	TimerBrandCD	= "Отсчет времени до восстановления Клейма"
+}
+
+L:SetMiscLocalization{
+	Ebonroc		= "Черноскал",
+	Flamegor	= "Пламегор"
+}
+
+-----------------------
+--  BWL Trash  --
+-----------------------
+-- Chromaggus, Death Talon Overseer and Death Talon Wyrmguard
+L = DBM:GetModLocalization("BWLTrash")
+
+L:SetGeneralLocalization{
+	name = "Трэш: Логово Крыла Тьмы"
+}
+L:SetWarningLocalization{
+	WarnVulnerable		= "Уязвимость к %s"
+}
+L:SetOptionLocalization{
+	WarnVulnerable		= "Показывать предупреждение об уязвимости к заклинаниям"
+}
+L:SetMiscLocalization{
+	Fire		= "Огню",
+	Nature		= "силам Природы",
+	Frost		= "магии Льда",
+	Shadow		= "Темной магии",
+	Arcane		= "Тайной магии",
+	Holy		= "Светлой магии"
+}
+
+------------------
+--  Chromaggus  --
+------------------
+L = DBM:GetModLocalization("Chromaggus")
+
+L:SetGeneralLocalization{
+	name = "Хромаггус"
+}
+L:SetWarningLocalization{
+	WarnBreath		= "%s",
+	WarnVulnerable	= "Уязвимость к %s"
+}
+L:SetTimerLocalization{
+	TimerBreathCD	= "%s",
+	TimerBreath		= "%s",
+	TimerVulnCD		= "Восстановление уязвимости",
+	TimerAllBreaths = "Дыхательный град"
+}
+L:SetOptionLocalization{
+	WarnBreath		= "Показывать предупреждение о дыханиях Хромаггуса",
+	WarnVulnerableNew	= "Показывать предупреждение об уязвимости к заклинаниям",
+	TimerBreathCD	= "Показывать время восстановления дыханий",
+	TimerBreath		= "Показывать применение Дыхания",
+	TimerVulnCD		= "Показывать восстановление уязвимости",
+	TimerAllBreaths = "Отсчет времени до Дыхательного града"
+}
+L:SetMiscLocalization{
+	Breath1		= "Первое Дыхание",
+	Breath2		= "Второе Дыхание",
+	VulnEmote	= "%s уходит, мерцая.",
+	Vuln		= "Уязвимость",
+	Fire		= "Огню",
+	Nature		= "силам Природы",
+	Frost		= "магии Льда",
+	Shadow		= "Темной магии",
+	Arcane		= "Тайной магии",
+	Holy		= "Светлой магии"
+}
+
+----------------
+--  Nefarian  --
+----------------
+L = DBM:GetModLocalization("Nefarian-Classic")
+
+L:SetGeneralLocalization{
+	name = "Нефариан"
+}
+L:SetWarningLocalization{
+	WarnAddsLeft		= "Осталось %d убийств",
+	WarnClassCall		= "Дебафф на %s",
+	specwarnClassCall	= "Классовый зов на тебе!"
+}
+L:SetTimerLocalization{
+	TimerClassCall		= "%s зов заканчивается"
+}
+L:SetOptionLocalization{
+	TimerClassCall		= "Показывать таймер классовых вызовов",
+	WarnAddsLeft		= "Объявлять количество убийств, оставшихся до начала 2-й фазы",
+	WarnClassCall		= "Объявлять классовый вызов",
+	specwarnClassCall	= "Показывать спецпредупреждение, когда Вы подвержены классовому зову"
+}
+L:SetMiscLocalization{
+	YellP1		= "Ну что ж, поиграем!",
+	YellP2		= "Отлично, слуги мои! Смертные уже не столь дерзки! Посмотрим, как они справятся с истинным Повелителем Пика Черной горы!!!",
+	YellP3		= "Не может быть! Восстаньте, мои прислужники! Послужите господину еще раз!",
+	YellShaman	= "Шаманы, покажите, на что способны ваши тотемы!",
+	YellPaladin	= "Паладины… Я слышал, у вас несколько жизней. Докажите.",
+	YellDruid	= "Друиды и их дурацкие превращения… Ну что ж, поглядим!",
+	YellPriest	= "Жрецы! Если вы собираетесь продолжать так лечить, то давайте хоть немного разнообразим процесс!",
+	YellWarrior	= "Воины! Я знаю, вы можете бить сильнее! Ну-ка, покажите!",
+	YellRogue	= "Разбойники? Хватит прятаться, покажитесь!",
+	YellWarlock	= "Чернокнижники, ну не беритесь вы за волшебство, которого сами не понимаете! Видите, что получилось?",
+	YellHunter	= "Охотники со своими жалкими пугачами!",
+	YellMage	= "И маги тоже? Осторожнее надо быть, когда играешь с магией…",
+	YellDK		= "Рыцари смерти! Сюда!",
+	YellMonk	= "Скажите, монахи, а голова у вас от этого катания не кружится?",
+	YellDH		= "Demon hunters? How odd, covering your eyes like that. Doesn't it make it hard to see the world around you?"
+}
+
+----------------------
+--  SoD BWL Trials  --
+----------------------
+L = DBM:GetModLocalization("SoDBWLTrials")
+
+L:SetGeneralLocalization{
+	name = "Сезон открытий Испытания"
+}
+L:SetWarningLocalization{
+	SpecWarnBothBombs		= "Синий и зеленый на >%s<",
+	SpecWarnBothBombsYou	= "Синий и зеленый на ТЕБЕ",
+}
+L:SetTimerLocalization{
+	TimerBombs				= DBM_COMMON_L.BOMBS
+}
+L:SetOptionLocalization{
+	SpecWarnBothBombs		= "Показывать спецпредупреждение, если на одном и том же игроке находятся и синяя, и зеленая бомбы.",
+	SpecWarnBothBombsYou	= "Показывать спецпредупреждение, если на Вас как синяя, так и зеленая бомбы.",
+	TimerBombs				= "Отсчет времени до синих и зеленых бомб (Испытание драконов)"
+}
+
+L:SetMiscLocalization{
+	-- Does not need translation if "BLUE BOMB" is okay, the "Blue"/"Green" strings are just fallbacks if Core is outdated
+	-- Only translate that if you need something like "BOMB BLUE"
+	BlueBomb = (DBM_COMMON_L.BLUE or "Blue") .. " " .. DBM_COMMON_L.BOMB,
+	GreenBomb = (DBM_COMMON_L.GREEN or "Green") .. " " .. DBM_COMMON_L.BOMB,
+
+	-- Used in options
+	BlueTrial = "Испытание синих драконов",
+	GreenTrial = "Испытание зеленых драконов",
+	GreenAndBlue = "Зеленый и синий на одном игроке",
+}
+
+----------------
+--  Lucifron  --
+----------------
+L = DBM:GetModLocalization("Lucifron")
+
+L:SetGeneralLocalization{
+	name = "Люцифрон"
+}
+L:SetWarningLocalization({
+	WarnGuardDied = "Заступник-поджигатель: %d/2" -- NPC ID 12119
+})
+L:SetOptionLocalization{
+	WarnGuardDied = "Показывать предупреждение об оставшихся заступниках-поджигателях"
+}
+
+----------------
+--  Magmadar  --
+----------------
+L = DBM:GetModLocalization("Magmadar")
+
+L:SetGeneralLocalization{
+	name = "Магмадар"
+}
+
+----------------
+--  Gehennas  --
+----------------
+L = DBM:GetModLocalization("Gehennas")
+
+L:SetGeneralLocalization{
+	name = "Гееннас"
+}
+L:SetWarningLocalization({
+	WarnGuardDied = "Поджигатель: %d/%d" -- NPC ID 11661
+})
+L:SetOptionLocalization{
+	WarnGuardDied = "Показывать предупреждение об оставшихся поджигателях"
+}
+
+------------
+--  Garr  --
+------------
+L = DBM:GetModLocalization("Garr-Classic")
+
+L:SetGeneralLocalization{
+	name = "Гарр"
+}
+L:SetMiscLocalization{
+	Firesworn = "Огнекамень"
+}
+
+--------------
+--  Geddon  --
+--------------
+L = DBM:GetModLocalization("Geddon")
+
+L:SetGeneralLocalization{
+	name = "Барон Геддон"
+}
+
+----------------
+--  Shazzrah  --
+----------------
+L = DBM:GetModLocalization("Shazzrah")
+
+L:SetGeneralLocalization{
+	name = "Шаззрах"
+}
+
+----------------
+--  Sulfuron  --
+----------------
+L = DBM:GetModLocalization("Sulfuron")
+
+L:SetGeneralLocalization{
+	name = "Предвестник Сульфурон"
+}
+L:SetWarningLocalization({
+	WarnGuardDied = "Поджигатель-жрец: %d/4" -- NPC ID 11662
+})
+L:SetOptionLocalization{
+	WarnGuardDied = "Показывать предупреждение об оставшихся поджигателях-жрецах"
+}
+
+----------------
+--  Golemagg  --
+----------------
+L = DBM:GetModLocalization("Golemagg")
+
+L:SetGeneralLocalization{
+	name = "Големагг Испепелитель"
+}
+
+-----------------
+--  Majordomo  --
+-----------------
+L = DBM:GetModLocalization("Majordomo")
+
+L:SetGeneralLocalization{
+	name = "Мажордом Экзекутус"
+}
+L:SetMiscLocalization{
+	FlamewakerElite		= "Поджигатель-гвардеец",
+	FlamewakerHealer	= "Поджигатель-целитель"
+}
+L:SetTimerLocalization{
+	timerShieldCD		= "Следующий щит"
+}
+L:SetOptionLocalization{
+	timerShieldCD		= "Отсчет времени до следующего урона/отражения щита"
+}
+
+----------------
+--  Ragnaros  --
+----------------
+L = DBM:GetModLocalization("Ragnaros-Classic")
+
+L:SetGeneralLocalization{
+	name = "Рагнарос"
+}
+L:SetWarningLocalization{
+	WarnSubmerge		= "Погружение",
+	WarnEmerge			= "Появление",
+	WarnGuardDied		= "Сын Пламени: %d/8" -- NPC ID 12143
+}
+L:SetTimerLocalization{
+	TimerSubmerge		= "Погружение",
+	TimerEmerge			= "Появление",
+	timerCombatStart	= DBM_CORE_L.AUTO_TIMER_TEXTS.combat
+}
+L:SetOptionLocalization{
+	WarnSubmerge		= "Показывать предупреждение о погружении",
+	TimerSubmerge		= "Отсчет времени до погружения",
+	WarnEmerge			= "Показывать предупреждение о появлении",
+	TimerEmerge			= "Отсчет времени до появления",
+	timerCombatStart	= DBM_CORE_L.AUTO_TIMER_OPTIONS.combat,
+	WarnGuardDied		= "Показывать предупреждение об оставшихся сынах пламени"
+}
+L:SetMiscLocalization{
+	Submerge	= "ПРИДИТЕ, СЛУГИ МОИ! ЗАЩИТИТЕ СВОЕГО ГОСПОДИНА!",
+	Pull		= "Наглые щенки! Вы опрометью ринулись навстречу смерти! Узрите же явление господина!"
+}
+
+----------------------
+--  The Molten Core --
+----------------------
+L = DBM:GetModLocalization("MoltenCore")
+
+L:SetGeneralLocalization{
+	name = "Огненные Недра"
+}
+
+L:SetOptionLocalization{
+	YellHeartCleared	= "Кричать, когда Сердце Пепла/Пепел будет удалено.",
+	WarnBossPower		= "Показывать предупреждение, когда энергия босса достигает 50%, 75%, 90% и 100%"
+}
+
+L:SetWarningLocalization{
+	WarnBossPower		= "Энергия босса на %d%%"
+}
+
+-----------------
+--  MC: Trash  --
+-----------------
+L = DBM:GetModLocalization("MCTrash")
+
+L:SetGeneralLocalization{
+	name = "Трэш: Огненные Недра"
+}
+
+-------------------
+--  Venoxis  --
+-------------------
+L = DBM:GetModLocalization("Venoxis")
+
+L:SetGeneralLocalization{
+	name = "Верховный жрец Веноксис"
+}
+
+-------------------
+--  Jeklik  --
+-------------------
+L = DBM:GetModLocalization("Jeklik")
+
+L:SetGeneralLocalization{
+	name = "Верховная жрица Джеклик"
+}
+
+-------------------
+--  Marli  --
+-------------------
+L = DBM:GetModLocalization("Marli")
+
+L:SetGeneralLocalization{
+	name = "Верховная жрица Мар'ли"
+}
+
+-------------------
+--  Thekal  --
+-------------------
+L = DBM:GetModLocalization("Thekal")
+
+L:SetGeneralLocalization{
+	name = "Верховный жрец Текал"
+}
+
+L:SetWarningLocalization({
+	WarnSimulKill	= "Первый адд мертв - воскрешение через ~15 сек."
+})
+
+L:SetTimerLocalization({
+	TimerSimulKill	= "Воскрешение"
+})
+
+L:SetOptionLocalization({
+	WarnSimulKill	= "Показывать предупреждение о смерти первого адда",
+	TimerSimulKill	= "Отсчет времени до воскрешения жреца"
+})
+
+L:SetMiscLocalization({
+	PriestDied	= "%s умирает.",
+	YellPhase2	= "Ширвалла, наполни меня" -- своей ЯРОСТЬЮ! or своим ГНЕВОМ!
+})
+
+-------------------
+--  Arlokk  --
+-------------------
+L = DBM:GetModLocalization("Arlokk")
+
+L:SetGeneralLocalization{
+	name = "Верховная жрица Арлокк"
+}
+
+-------------------
+--  Hakkar  --
+-------------------
+L = DBM:GetModLocalization("Hakkar")
+
+L:SetGeneralLocalization{
+	name = "Хаккар"
+}
+
+-------------------
+--  Bloodlord  --
+-------------------
+L = DBM:GetModLocalization("Bloodlord")
+
+L:SetGeneralLocalization{
+	name = "Мандокир Повелитель Крови"
+}
+L:SetMiscLocalization{
+	GazeYell	= "Я за тобой слежу"
+}
+
+-------------------
+--  Edge of Madness  --
+-------------------
+L = DBM:GetModLocalization("EdgeOfMadness")
+
+L:SetGeneralLocalization{
+	name = "Грань Безумия"
+}
+
+-------------------
+--  Gahz'ranka  --
+-------------------
+L = DBM:GetModLocalization("Gahzranka")
+
+L:SetGeneralLocalization{
+	name = "Газ'ранка"
+}
+
+-------------------
+--  Jindo  --
+-------------------
+L = DBM:GetModLocalization("Jindo")
+
+L:SetGeneralLocalization{
+	name = "Мастер проклятий Джин'до"
+}
+
+L:SetMiscLocalization{
+	Ghosts = "Призраки"
+}
+
+--------------
+--  Onyxia  --
+--------------
+L = DBM:GetModLocalization("OnyxiaVanilla")
+
+L:SetGeneralLocalization{
+	name = "Ониксия"
+}
+
+L:SetWarningLocalization{
+	WarnWhelpsSoon		= "Скоро дракончики Ониксии"
+}
+
+L:SetTimerLocalization{
+	TimerWhelps	= "Дракончики Ониксии"
+}
+
+L:SetOptionLocalization{
+	TimerWhelps				= "Отсчет времени до появления дракончиков Ониксии",
+	WarnWhelpsSoon			= "Заранее предупреждать о дракончиках Ониксии",
+	SoundWTF3				= "Воспроизвести забавные звуки из легендарного классического рейда Ониксии"
+}
+
+L:SetMiscLocalization{
+	YellP1 = "Вот это сюрприз. Обычно, чтобы найти обед, мне приходится покидать логово.",
+	YellP2 = "Эта бессмысленная возня вгоняет меня в тоску. Я сожгу вас всех!",
+	YellP3 = "Похоже, вам требуется преподать еще один урок, смертные!",
+	SoDWarning = "Добро пожаловать в %s. DBM воспроизведет несколько забавных звуков из легендарного классического рейда во время боя. Вы можете отключить это в пользовательском интерфейсе DBM: введите /dbm и перейдите к моду Ониксия в разделе Рейды -> Классический."
+}
+
+-------------------
+--  Anub'Rekhan  --
+-------------------
+L = DBM:GetModLocalization("AnubRekhanVanilla")
+
+L:SetGeneralLocalization({
+	name = "Ануб'Рекан"
+})
+
+L:SetMiscLocalization({
+	Pull1				= "Да, беги! От этого ускоряется циркуляция крови!",
+	Pull2				= "Немного такта…",
+	Pull3				= "Выхода нет."
+})
+
+----------------------------
+--  Grand Widow Faerlina  --
+----------------------------
+L = DBM:GetModLocalization("FaerlinaVanilla")
+
+L:SetGeneralLocalization({
+	name = "Великая вдова Фарлина"
+})
+
+L:SetMiscLocalization({
+	Pull1					= "На колени предо мной, червь!",
+	Pull2					= "Тебе не скрыться от меня!",
+	Pull3					= "Убить их – во имя повелителя!",
+	Pull4 					= "Бегите, пока еще можете!"
+})
+
+---------------
+--  Maexxna  --
+---------------
+L = DBM:GetModLocalization("MaexxnaVanilla")
+
+L:SetGeneralLocalization({
+	name = "Мексна"
+})
+
+------------------------------
+--  Noth the Plaguebringer  --
+------------------------------
+L = DBM:GetModLocalization("NothVanilla")
+
+L:SetGeneralLocalization({
+	name = "Нот Чумной"
+})
+
+L:SetWarningLocalization({
+	WarningTeleportNow	= "Телепортация",
+	WarningTeleportSoon	= "Телепортация через 20 сек."
+})
+
+L:SetTimerLocalization({
+	TimerTeleport		= "Телепортация",
+	TimerTeleportBack	= "Телепортация обратно"
+})
+
+L:SetOptionLocalization({
+	WarningTeleportNow	= "Показывать предупреждение о телепортации",
+	WarningTeleportSoon	= "Показывать предупреждение перед следующей телепортацией",
+	TimerTeleport		= "Отсчет времени до телепортации",
+	TimerTeleportBack	= "Отсчет времени до обратной телепортации"
+})
+
+L:SetMiscLocalization({
+	Pull1				= "Умри, преступник!",
+	Pull2				= "Слава господину!",
+	Pull3				= "Жизнь – плата за твои проступки.",
+	AddsYell			= "Восстаньте, мои воины! Восстаньте и сразитесь вновь!"
+})
+
+--------------------------
+--  Heigan the Unclean  --
+--------------------------
+L = DBM:GetModLocalization("HeiganVanilla")
+
+L:SetGeneralLocalization({
+	name = "Хейган Нечестивый"
+})
+
+L:SetMiscLocalization({
+	Pull1				= "Теперь ты принадлежишь мне.",
+	Pull2				= "Я вижу тебя…",
+	Pull3 				= "Пришло ваше время…"
+})
+
+---------------
+--  Loatheb  --
+---------------
+L = DBM:GetModLocalization("LoathebVanilla")
+
+L:SetGeneralLocalization({
+	name = "Мерзот"
+})
+
+L:SetWarningLocalization({
+	WarningHealSoon	= "Можно исцелять через 3 сек.",
+	WarningHealNow	= "Исцеляйте сейчас"
+})
+
+L:SetOptionLocalization({
+	WarningHealSoon		= "Заранее предупреждать перед 3-х секундным окном исцеления",
+	WarningHealNow		= "Показывать предупреждение для 3-х секундного окна исцеления",
+	Sorting				= "Сортировка",
+	Alphabetical		= "В алфавитном порядке",
+	Duration			= "Продолжительность"
+})
+
+-----------------
+--  Patchwerk  --
+-----------------
+L = DBM:GetModLocalization("PatchwerkVanilla")
+
+L:SetGeneralLocalization({
+	name = "Лоскутик"
+})
+
+L:SetMiscLocalization({
+	Pull1			= "Лоскутик хочет играть!",
+	Pull2			= "Кел'Тузад сделает Лоскутика своим богом войны!"
+})
+
+-----------------
+--  Grobbulus  --
+-----------------
+L = DBM:GetModLocalization("GrobbulusVanilla")
+
+L:SetGeneralLocalization({
+	name = "Гроббулус"
+})
+
+-------------
+--  Gluth  --
+-------------
+L = DBM:GetModLocalization("GluthVanilla")
+
+L:SetGeneralLocalization({
+	name = "Глут"
+})
+
+----------------
+--  Thaddius  --
+----------------
+L = DBM:GetModLocalization("ThaddiusVanilla")
+
+L:SetGeneralLocalization({
+	name = "Таддиус"
+})
+
+L:SetMiscLocalization({
+	Stalagg 	= "Сталагг",
+	Feugen 		= "Фойген",
+	Yell1P1		= "На корм хозяину!",
+	Yell2P1		= "Сталагг тебя раздавит!",
+	Yell1P2 	= "Отведайте… своих… костей…",
+	Yell2P2 	= "Проломить… тебя!!!",
+	Yell3P2 	= "Убей…",
+	EmoteDies 	= "%s умирает.",
+	--EmoteRevive = "%s is jolted back to life!"
+})
+
+L:SetOptionLocalization({
+	WarningChargeChanged	= "Показывать спецпредупреждение, когда Ваша полярность изменена",
+	WarningChargeNotChanged	= "Показывать спецпредупреждение, когда Ваша полярность не изменена",
+	AirowsEnabled			= "Показывать стрелки во время $spell:28089",
+	Never					= "Никогда",
+	TwoCamp					= "Показывать стрелки (обычная \"2-сторонняя\" стратегия)",
+	ArrowsRightLeft			= "Показывать стрелки влево/вправо для \"4-сторонней\" стратегии (показывать стрелку влево, если полярность изменилась; стрелку вправо - если нет)",
+	ArrowsInverse			= "Обратная \"4-сторонняя\" стратегия (показывать стрелку вправо, если полярность изменилась; стрелку влево - если нет)"
+})
+
+L:SetWarningLocalization({
+	WarningChargeChanged	= "Полярность изменена на %s",
+	WarningChargeNotChanged	= "Полярность не изменена"
+})
+
+----------------------------
+--  Instructor Razuvious  --
+----------------------------
+L = DBM:GetModLocalization("RazuviousVanilla")
+
+L:SetGeneralLocalization({
+	name = "Инструктор Разувиус"
+})
+
+L:SetMiscLocalization({
+	Pull1 		= "Никого не щадить!",
+	Pull2 		= "Время тренировок прошло! Покажи мне, чему ты выучился!",
+	Pull3 		= "Делай так, как я тебя учил!",
+	Pull4 		= "Добей его!.. У тебя что, с этим проблемы?",
+	Understudy	= "Ученик рыцаря смерти"
+})
+
+----------------------------
+--  Gothik the Harvester  --
+----------------------------
+L = DBM:GetModLocalization("GothikVanilla")
+
+L:SetGeneralLocalization({
+	name = "Готик Жнец"
+})
+
+L:SetOptionLocalization({
+	TimerWave			= "Отсчет времени до следующей волны",
+	WarningWaveSoon		= "Показывать предупреждение перед следующей волной",
+	WarningWaveSpawned	= "Показывать предупреждение для волны призыва",
+	WarningRiderDown	= "Показывать предупреждение, когда Всадник мертв",
+	WarningKnightDown	= "Показывать предупреждение, когда Рыцарь мертв"
+})
+
+L:SetTimerLocalization({
+	TimerWave	= "Волна %d/18",
+})
+
+L:SetWarningLocalization({
+	WarningWaveSoon		= "Волна %d: %s через 3 сек.",
+	WarningWaveSpawned	= "Волна %d: %s призван",
+	WarningRiderDown	= "Всадник мертв",
+	WarningKnightDown	= "Рыцарь мертв"
+})
+
+L:SetMiscLocalization({
+	WarningWave1	= "%d %s",
+	WarningWave2	= "%d %s и %d %s",
+	WarningWave3	= "%d %s, %d %s и %d %s",
+	Trainee			= "Ученика",
+	Knight			= "Рыцаря",
+	Horse			= "Призрачного коня",
+	Rider			= "Всадника"
+})
+
+---------------------
+--  Four Horsemen  --
+---------------------
+L = DBM:GetModLocalization("HorsemenVanilla")
+
+L:SetGeneralLocalization({
+	name = "Четыре Всадника"
+})
+
+L:SetOptionLocalization({
+	WarningMarkSoon				= "Показывать предупреждение перед следующими знаком",
+	SpecialWarningMarkOnPlayer	= "Показывать спецпредупреждение, когда на Вас больше 4-х знаков",
+	timerMark					= "Отсчет времени до следующего знака Всадника (со счетчиком)",
+	WarnHorsemanDied			= "Показывать предупреждение об оставшихся Всадниках"
+})
+
+L:SetTimerLocalization({
+	timerMark	= "Метка %d",
+})
+
+L:SetWarningLocalization({
+	WarningMarkSoon				= "Метка %d через 3 сек.",
+	SpecialWarningMarkOnPlayer	= "%s: %s",
+	WarnHorsemanDied 			= "%s умирает (Осталось %d убийств)"
+})
+
+L:SetMiscLocalization({
+	Korthazz	= "Тан Кортазз",
+	Mograine	= "Верховный лорд Могрейн",
+	Blaumeux	= "Леди Бломе",
+	Zeliek		= "Сэр Зелиек"
+})
+-----------------
+--  Sapphiron  --
+-----------------
+L = DBM:GetModLocalization("SapphironVanilla")
+
+L:SetGeneralLocalization({
+	name = "Сапфирон"
+})
+
+L:SetOptionLocalization({
+	WarningAirPhaseSoon	= "Показывать предупреждение о приближении Воздушной фазы",
+	WarningAirPhaseNow	= "Показывать предупреждение о Воздушной фазе",
+	WarningLanded		= "Показывать предупреждение о Наземной фазе",
+	TimerAir			= "Отсчет времени до Воздушной фазы",
+	TimerLanding		= "Отсчет времени до приземления"
+})
+
+L:SetWarningLocalization({
+	WarningAirPhaseSoon	= "Воздушная фаза скоро начнётся",
+	WarningAirPhaseNow	= "Воздушная фаза",
+	WarningLanded		= "Сапфирон приземляется"
+})
+
+L:SetTimerLocalization({
+	TimerAir			= "Воздушная фаза",
+	TimerLanding		= "Приземление"
+})
+
+------------------
+--  Kel'Thuzad  --
+------------------
+
+L = DBM:GetModLocalization("KelThuzadVanilla")
+
+L:SetGeneralLocalization({
+	name = "Кел'Тузад"
+})
+
+L:SetMiscLocalization({
+	YellP1			= "Приспешники, слуги, воины холодного мрака! Повинуйтесь призыву Кел'Тузада!"
+})
+
+-----------------
+--  Naxx Trash --
+-----------------
+
+L = DBM:GetModLocalization("NaxxTrash")
+
+L:SetGeneralLocalization({
+	name = "Трэш: Наксрамас"
+})
+
+--------------------
+--  SoD Hardmode  --
+--------------------
+
+L = DBM:GetModLocalization("SoD_NaxxHardmode")
+
+L:SetGeneralLocalization({
+	name = "Сезон открытий - сложный режим"
+})
+
+L:SetOptionLocalization({
+	AutomateEmote		= "Пытаться автоматически активировать правильную эмоцию для выполнения приказов (возможно, проблема не устранена из-за исправления Blizzard)",
+	AffixTimer			= "Показывать таймеры для аффиксов сложного режима",
+	WarnEggs			= "Показывать предупреждение для появления яиц (сложный режим «Паучий квартал»)",
+	SpecWarnOrders		= "Показывать спецпредупреждение, когда DBM не может автоматизировать выполнение приказов"
+})
+
+L.MarchingOrderTranslationComplete = false -- Set this to false until *all* of the Order* below are translated to the actual string used in the game
+L:SetMiscLocalization({
+	Affixes				= "Аффиксы",
+	ConstructAffix		= "Молниевая бомба",
+	SpiderAffix			= "Взрывающееся яйцо",
+	UnsupportedLocale	= [[Добро пожаловать в усиленный Военный квартал!
+Механика сложного режима выбирает случайных игроков и требует от них проявить определенную эмоцию.
+Наша поддержка локализации Вашего клиента %s еще не завершена, DBM может пропустить эмоции.
+Вы можете помочь! Поделитесь с нами в discord.gg/deadlybossmods точным текстом (скриншотами, видео, логами транскриптора), используемым в механике сложного режима.
+]],
+	AutomatedEmote		= "DBM попытался автоматизировать эмоцию %s для приказов (это может не сработать из-за блокировки автоматизации Blizzard).",
+	AutomatedEmoteGuess	= "DBM попытался автоматизировать эмоцию %s для приказов на основе догадки. Это была правильная эмоция? Дайте нам знать в discord.gg/deadlybossmods",
+	-- List of emotes may not be complete, let me know if I missed one
+	OrderDance			= "DANCE for me!",
+	OrderRoar			= "Show me your best ROAR!",
+	OrderSalute			= "SALUTE, maggot!",
+	OrderBow			= "BOW before me, mortal!",
+	OrderPray			= "Get on your knees and PRAY!",
+	OrderKneel			= nil, -- I thought i saw this one, but maybe I mistook it for pray? Don't have it in logs
+	-- Guessed regexes for emotes, by default the emote tokens are used (which actually works 100% in en locale)
+	-- Optional and obsolete if all Order* strings above are complete
+	GuessOrderDance		= nil,
+	GuessOrderRoar		= nil,
+	GueesOrderSalute	= nil,
+	GuessOrderBow		= nil,
+	GuessOrderPray		= nil,
+	GuessOrderKneel		= nil,
+})
+
+L:SetWarningLocalization({
+	WarnEggs		= "Появление яиц",
+	SpecWarnOrders	= "Выполнение приказа: %s"
+})
+
+L:SetTimerLocalization({
+	AffixTimer	= "Аффикс"
+})
+
+---------------------------
+--  Season of Discovery  --
+---------------------------
+
+---------------------------
+--  Blackfathom Deeps  --
+---------------------------
+
+------------------
+--  Baron Aquanis  --
+------------------
+L = DBM:GetModLocalization("BaronAuanisSoD")
+
+L:SetGeneralLocalization({
+	name = "Барон Акванис"
+})
+
+L:SetMiscLocalization({
+	Water		= "Вода"
+})
+
+------------------
+--  Ghamoo-ra  --
+------------------
+L = DBM:GetModLocalization("GhamooraSoD")
+
+L:SetGeneralLocalization({
+	name = "Гхаму-ра"
+})
+
+------------------
+--  Lady Sarevess  --
+------------------
+L = DBM:GetModLocalization("LadySarevessSoD")
+
+L:SetGeneralLocalization({
+	name = "Леди Саревесс"
+})
+
+------------------
+--  Gelihast  --
+------------------
+L = DBM:GetModLocalization("GelihastSoD")
+
+L:SetGeneralLocalization({
+	name = "Гелихаст"
+})
+
+L:SetTimerLocalization{
+	TimerImmune = "Невосприимчивость заканчивается"
+}
+
+L:SetOptionLocalization({
+	TimerImmune	= "Показывать таймер продолжительности невосприимчивости Гелихаста во время смены фаз"
+})
+
+------------------
+--  Lorgus Jett  --
+------------------
+L = DBM:GetModLocalization("LorgusJettSoD")
+
+L:SetGeneralLocalization({
+	name = "Лоргус Джетт"
+})
+
+L:SetWarningLocalization({
+	warnPriestRemaining		= "Осталось %s жриц"
+})
+
+L:SetOptionLocalization({
+	warnPriestRemaining	= "Показывать предупреждение о том, сколько осталось Жриц прилива из Непроглядной Пучины"
+})
+
+------------------
+--  Twilight Lord Kelris  --
+------------------
+L = DBM:GetModLocalization("TwilightLordKelrisSoD")
+
+L:SetGeneralLocalization({
+	name = "Повелитель сумрака Келрис"
+})
+
+------------------
+--  Aku'mai  --
+------------------
+L = DBM:GetModLocalization("AkumaiSoD")
+
+L:SetGeneralLocalization({
+	name = "Аку'май"
+})
+
+------------------
+--  Gnomeregan  --
+------------------
+
+---------------------------
+--  Crowd Pummeler 9-60  --
+---------------------------
+L = DBM:GetModLocalization("CrowdPummellerSoD")
+
+L:SetGeneralLocalization({
+	name = "\"Толпогон 9-60\""
+})
+
+---------------
+--  Grubbis  --
+---------------
+L = DBM:GetModLocalization("GrubbisSoD")
+
+L:SetGeneralLocalization({
+	name = "Грязнюк"
+})
+
+L:SetMiscLocalization({
+	FirstPull = "Некоторые вентиляционные шахты до сих пор разносят радиоактивные вещества по всему Гномрегану.",
+	Pull = "О нет! Такие толчки могут означать только одно..."
+})
+
+----------------------------
+--  Electrocutioner 6000  --
+----------------------------
+L = DBM:GetModLocalization("ElectrocutionerSoD")
+
+L:SetGeneralLocalization({
+	name = "Электрошокер 6000"
+})
+
+-----------------------
+--  Viscous Fallout  --
+-----------------------
+L = DBM:GetModLocalization("ViscousFalloutSoD")
+
+L:SetGeneralLocalization({
+	name = "Липкая муть"
+})
+
+----------------------------
+--  Mechanical Menagerie  --
+----------------------------
+L = DBM:GetModLocalization("MechanicalMenagerieSoD")
+
+L:SetGeneralLocalization({
+	name = "Механический зверинец"
+})
+
+L:SetMiscLocalization{
+	Sheep		= "Овца",
+	Whelp		= "Дракончик",
+	Squirrel	= "Белка",
+	Chicken		= "Курица"
+}
+
+-----------------------------
+--  Mekgineer Thermaplugg  --
+-----------------------------
+L = DBM:GetModLocalization("ThermapluggSoD")
+
+L:SetGeneralLocalization({
+	name = "Анжинер Термоштепсель"
+})
+
+L:SetTimerLocalization{
+	timerTankCD = "Способность танка"
+}
+
+L:SetOptionLocalization({
+	timerTankCD	= "Отсчет времени до перезарядки случайных способностей танка на 4-й фазе"
+})
+
+------------------
+--  Sunken Temple  --
+------------------
+
+--------------
+-- ST Trash --
+--------------
+L = DBM:GetModLocalization("STTrashSoD")
+
+L:SetGeneralLocalization{
+	name = "Трэш: Затонувший храм"
+}
+
+---------------------------
+--  Atal'alarion  --
+---------------------------
+L = DBM:GetModLocalization("AtalalarionSoD")
+
+L:SetGeneralLocalization({
+	name = "Атал'аларион"
+})
+
+---------------------------
+--  Festering Rotslime  --
+---------------------------
+L = DBM:GetModLocalization("FesteringRotslimeSoD")
+
+L:SetGeneralLocalization({
+	name = "Гнойная гнилослизь"
+})
+
+---------------------------
+--  Atal'ai Defenders  --
+---------------------------
+L = DBM:GetModLocalization("AtalaiDefendersSoD")
+
+L:SetGeneralLocalization({
+	name = "Защитники Атал'ай"
+})
+
+L:SetOptionLocalization({
+	SetIconsOnGhosts = "Установить иконки на боссов-призраков"
+})
+
+---------------------------
+--  Dreamscythe and Weaver  --
+---------------------------
+L = DBM:GetModLocalization("DreamscytheAndWeaverSoD")
+
+L:SetGeneralLocalization({
+	name = "Жнец Снов и Ткачик"
+})
+
+---------------------------
+--  Avatar of Hakkar  --
+---------------------------
+L = DBM:GetModLocalization("AvatarofHakkarSoD")
+
+L:SetGeneralLocalization({
+	name = "Аватара Хаккара"
+})
+
+---------------------------
+--  Jammal'an and Ogom  --
+---------------------------
+L = DBM:GetModLocalization("JammalanAndOgomSoD")
+
+L:SetGeneralLocalization({
+	name = "Джаммал'ан и Огом"
+})
+
+---------------------------
+--  Morphaz and Hazzas  --
+---------------------------
+L = DBM:GetModLocalization("MorphazandHazzasSoD")
+
+L:SetGeneralLocalization({
+	name = "Морфаз и Хаззас"
+})
+
+---------------------------
+--  Shade of Eranikus  --
+---------------------------
+L = DBM:GetModLocalization("ShadeofEranikusSoD")
+
+L:SetGeneralLocalization({
+	name = "Тень Эраникуса"
+})
+
+---------------------------
+--  Lord Roccor (3042) --
+---------------------------
+--L= DBM:GetModLocalization(2663)
+
+---------------------------
+--  Bael'Gar (3044) --
+---------------------------
+--L= DBM:GetModLocalization(2664)
+
+---------------------------
+--  Lord Incendius (3043) --
+---------------------------
+--L= DBM:GetModLocalization(2665)
+
+---------------------------
+--  Golem Lord Argelmach (3046) --
+---------------------------
+--L= DBM:GetModLocalization(2666)
+
+---------------------------
+--  The Seven (3048) --
+---------------------------
+--L= DBM:GetModLocalization(2667)
+
+---------------------------
+--  General Angerforge (3045) --
+---------------------------
+--L= DBM:GetModLocalization(2668)
+
+---------------------------
+--  Ambassador Flamelash (3047) --
+---------------------------
+--L= DBM:GetModLocalization(2669)
+
+---------------------------
+--  Emperor Dagran Thaurissan (3049) --
+---------------------------
+--L= DBM:GetModLocalization(2670)
+
+
+-----------------------------
+--  Scarlet Enclave (SoD)  --
+-----------------------------
+-- This mostly relies on the new auto-generated locales for boss names from encounter data.
+-- Only add name localization if the name in locale.generated.lua is inconsistent with the commonly used name in the language.
+
+L = DBM:GetModLocalization("Balnazzar")
+
+L:SetMiscLocalization{
+	OtherPlayer = "другой игрок", -- Use with AUTO_SPEC_WARN_TEXTS.moveto ("$spell - move to >%%s<")
+	Tick = "Tick"
+}
+
+L = DBM:GetModLocalization("Solistrasza")
+
+L = DBM:GetModLocalization("Beatrix")
+
+L:SetMiscLocalization{
+	YellFroggers1 = "break their ranks",
+	YellFroggers2 = "Ready your lances",
+	CannonMistress = "Офицер артиллерии Линд",
+	YellPhase2 = "Наша сила в единстве! Враги дрогнут перед нашим натиском!",
+	Footmen = "Лакей",
+	Horses = "Лошади"
+}
+
+L = DBM:GetModLocalization("RebornCouncil")
+
+L = DBM:GetModLocalization("Caldoran")
+
+L = DBM:GetModLocalization("LillianVoss")
+
+L = DBM:GetModLocalization("Beastmaster")
+
+L:SetOptionLocalization({
+	TimerMark = "Отсчет времени до следующих меток $spell:1230200 и $spell:1230242 (с подсчетом)",
+	WarnMark = "Показывать предупреждение для меток $spell:1230200 и $spell:1230242 (с подсчетом)"
+})
+
+L:SetTimerLocalization({
+	TimerMark	= "Метка %d",
+})
+
+L:SetWarningLocalization({
+	WarnMark = "Метка %d"
+})
+
+L = DBM:GetModLocalization("Mason")
+
+L:SetMiscLocalization{
+	Cannons1 = "Огонь!",
+	Cannons2 = "Пли!"
+}
+
+L = DBM:GetModLocalization("SE_Trash")
+L:SetGeneralLocalization{
+	name = "Трэш: Анклав Алого Ордена"
+}
+
+L:SetOptionLocalization{
+	FlightTimer = "Отсчет времени до полетов Грифонов",
+}
+
+L:SetMiscLocalization{
+	CentralTower = "Центральная башня",
+	Prison = "Тюрьма",
+	Cathedral = "Собор"
+}

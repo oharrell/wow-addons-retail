@@ -1,0 +1,56 @@
+<Ui>
+	<PieMenu name="ConsolePortSecurePie" virtual="true" inherits="SecureHandlerStateTemplate, SecureActionButtonTemplate">
+		<Attributes>
+			<Attribute name="ignoregamepadhotkey" type="boolean" value="true"/>
+		</Attributes>
+	</PieMenu>
+
+	<PieMenu name="ConsolePortSlicedPie" virtual="true">
+		<KeyValues>
+			<KeyValue key="isSlicedPie" type="boolean" value="true"/>
+		</KeyValues>
+		<Frames>
+			<PieSlice parentKey="ActiveSlice" alpha="0" frameLevel="2">
+				<KeyValues>
+					<KeyValue key="isActiveSlice" type="boolean" value="true"/>
+				</KeyValues>
+			</PieSlice>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<MaskTexture parentKey="InnerMask" file="Interface\AddOns\ConsolePort\Assets\Textures\Pie\Pie_InnerMask">
+					<Size x="500" y="500"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</PieMenu>
+
+	<PieMenu name="ConsolePortSlicedStickyPie" inherits="ConsolePortSlicedPie" virtual="true">
+		<Frames>
+			<PieSlice parentKey="StickySlice" alpha="0" frameLevel="2"/>
+		</Frames>
+	</PieMenu>
+
+	<PieMenu name="ConsolePortSpellFlyout" parent="UIParent" registerForClicks="AnyUp" inherits="ConsolePortSecurePie, ConsolePortSlicedPie" hidden="true">
+		<Size x="500" y="500"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</PieMenu>
+
+	<PieMenu name="ConsolePortPetRing" parent="UIParent" registerForClicks="AnyUp, AnyDown" inherits="ConsolePortSecurePie, ConsolePortSlicedPie" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="radius" type="number" value="0.6"/>
+		</KeyValues>
+	</PieMenu>
+
+	<!-- Single file views -->
+	<Script file="Flyout.lua"/>
+	<Script file="Petring.lua"/>
+</Ui>

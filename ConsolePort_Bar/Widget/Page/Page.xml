@@ -1,0 +1,11 @@
+<Ui>
+	<Script file="Page.lua"/>
+
+	<Frame name="CPActionPage" virtual="true" clampedToScreen="true" movable="true" mixin="CPActionPage" inherits="CPActionBar">
+		<Size x="10" y="10"/>
+		<KeyValues>
+			<KeyValue key="alwaysUpdateLayout" value="true"/>
+		</KeyValues>
+	</Frame>
+
+</Ui>

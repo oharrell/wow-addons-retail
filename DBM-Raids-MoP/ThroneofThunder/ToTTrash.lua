@@ -1,0 +1,117 @@
+local mod	= DBM:NewMod("ToTTrash", "DBM-Raids-MoP", 2)
+local L		= mod:GetLocalizedStrings()
+
+mod:SetRevision("20260523022011")
+mod:DisableHardcodedOptions()
+mod:SetModelID(47785)
+mod:SetZone(1098)
+
+mod.isTrashMod = true
+
+mod:RegisterEvents(
+	"SPELL_CAST_START 139895 136751 139899",
+	"SPELL_AURA_APPLIED 139322 139900 140296",
+	"UNIT_DIED",
+	"UNIT_SPELLCAST_SUCCEEDED target focus"
+)
+
+local warnStormEnergy			= mod:NewTargetAnnounce(139322, 4)
+local warnSpiritFire			= mod:NewTargetAnnounce(139895, 3)--This is morchok entryway trash that throws rocks at random poeple.
+local warnStormCloud			= mod:NewTargetAnnounce(139900, 4)
+local warnFixated				= mod:NewSpellAnnounce(140306, 3)
+
+local specWarnStormEnergy		= mod:NewSpecialWarningMoveAway(139322, nil, nil, nil, 1, 2, nil, nil, "scatter")
+local specWarnShadowNova		= mod:NewSpecialWarningRun(139899, nil, nil, 2, 4, 2, nil, nil, "justrun")--This hurls you pretty damn far. If you aren't careful you're as good as gone.
+local specWarnStormCloud		= mod:NewSpecialWarningMoveAway(139900, nil, nil, nil, 1, 2, nil, nil, "scatter")
+local specWarnSonicScreech		= mod:NewSpecialWarningInterrupt(136751, nil, nil, nil, 1, 2, nil, nil, "kickcast")
+local specWarnConductiveShield	= mod:NewSpecialWarningReflect(140296, nil, nil, nil, 1, 2, nil, nil, "stopattack")
+
+local timerSpiritfireCD			= mod:NewCDTimer(12, 139895, nil, nil, nil, 3)
+local timerShadowNovaCD			= mod:NewCDTimer(12, 139899, nil, nil, nil, 3, nil, DBM_COMMON_L.DEADLY_ICON)
+local timerFixatedCD			= mod:NewNextTimer(15, 140306, nil, nil, nil, 3)
+local timerConductiveShield		= mod:NewTargetTimer(10, 140296)
+local timerConductiveShieldCD	= mod:NewCDSourceTimer(20, 140296, nil, nil, nil, 5, nil, DBM_COMMON_L.DAMAGE_ICON)--On 25 man, it always 20, But 10 man, it variables.
+
+local function SpiritFireTarget(sGUID)
+	local targetname = nil
+	for uId in DBM:GetGroupMembers() do
+		if UnitGUID(uId.."target") == sGUID then
+			targetname = DBM:GetUnitFullName(uId.."targettarget")
+			break
+		end
+	end
+	if targetname and mod:AntiSpam(2, targetname) then--Anti spam using targetname as an identifier, will prevent same target being announced double/tripple but NOT prevent multiple targets being announced at once :)
+		warnSpiritFire:Show(targetname)
+	end
+end
+
+function mod:SPELL_CAST_START(args)
+	if not self.Options.Enabled then return end
+	local spellId = args.spellId
+	if spellId == 139895 then
+		self:Schedule(0.2, SpiritFireTarget, args.sourceGUID)
+		timerSpiritfireCD:Start()
+	elseif spellId == 136751 and self:CheckInterruptFilter(args.sourceGUID, false, true) then
+		specWarnSonicScreech:Show(args.sourceName)
+		specWarnSonicScreech:Play("kickcast")
+	elseif spellId == 139899 then
+		specWarnShadowNova:Show()
+		specWarnShadowNova:Play("justrun")
+		timerShadowNovaCD:Start()
+	end
+end
+
+function mod:SPELL_AURA_APPLIED(args)
+	if not self.Options.Enabled then return end
+	local spellId = args.spellId
+	if spellId == 139322 then--Or 139559, not sure which
+		warnStormEnergy:CombinedShow(1.5, args.destName)
+		if args:IsPlayer() then
+			specWarnStormEnergy:Show()
+			specWarnStormEnergy:Play("scatter")
+		end
+	elseif spellId == 139900 then
+		warnStormCloud:CombinedShow(0.5, args.destName)
+		if args:IsPlayer() then
+			specWarnStormCloud:Show()
+			specWarnStormCloud:Play("scatter")
+		end
+	elseif spellId == 140296 then
+		timerConductiveShield:Start(nil, args.destName)
+		timerConductiveShieldCD:Start(20, args.destName, args.sourceGUID)
+		if self:AntiSpam(3, 2) then
+			specWarnConductiveShield:Show(args.destName)
+			specWarnConductiveShield:Play("stopattack")
+		end
+	end
+end
+
+function mod:UNIT_DIED(args)
+	if not self.Options.Enabled then return end
+	local cid = self:GetCIDFromGUID(args.destGUID)
+	if cid == 70308 then--Soul-Fed Construct
+		timerSpiritfireCD:Cancel()
+	elseif cid == 70440 then--Monara
+		timerShadowNovaCD:Cancel()
+	elseif cid == 69834 or cid == 69821 then
+		timerConductiveShield:Cancel(args.destName)
+		timerConductiveShieldCD:Cancel(args.destName, args.destGUID)
+	elseif cid == 68220 then--Gastropod
+		timerFixatedCD:Cancel(args.destGUID)
+	end
+end
+
+--"<1.0 17:57:05> [UNIT_SPELLCAST_SUCCEEDED] Gastropod [[target:Fixated::0:140306]]", -- [23]
+function mod:UNIT_SPELLCAST_SUCCEEDED(uId, _, spellId)
+	if not self.Options.Enabled then return end
+	if spellId == 140306 and self:AntiSpam(3, 2) then
+		self:SendSync("OMGSnail", UnitGUID(uId))
+	end
+end
+
+function mod:OnSync(msg, guid)
+	if msg == "OMGSnail" and guid then
+		warnFixated:Show()
+		timerFixatedCD:Start(nil, guid)
+	end
+end

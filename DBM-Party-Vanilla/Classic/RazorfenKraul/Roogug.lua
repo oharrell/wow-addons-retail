@@ -1,0 +1,30 @@
+local mod	= DBM:NewMod("Roogug", "DBM-Party-Vanilla", 11)
+local L		= mod:GetLocalizedStrings()
+
+mod:SetRevision("20260905035030")
+mod:DisableHardcodedOptions()
+mod:SetCreatureID(6168)
+--mod:SetEncounterID(438)
+mod:SetModelID(6110)
+mod:SetZone(47)
+
+mod:RegisterCombat("combat")
+
+if DBM:IsRestricted() then
+	--do stuff
+	--mod:AddAuraSoundOption(372820, true, 372820, 1, 2, "watchfeet", 8, 0)
+else
+
+	mod:RegisterEventsInCombat(
+		"SPELL_CAST_SUCCESS 8270"
+	)
+
+	--Rumbler spawned on engage
+	local warningSummonEarthRumbler		= mod:NewSpellAnnounce(8270, 2)
+
+	function mod:SPELL_CAST_SUCCESS(args)
+		if args:IsSpell(8270) then
+			warningSummonEarthRumbler:Show()
+		end
+	end
+end
